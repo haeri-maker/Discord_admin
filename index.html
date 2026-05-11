@@ -103,11 +103,14 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
     <div class="logo-name">Nuriglow Discord</div>
     <div class="logo-sub">Challenge Admin</div>
   </div>
+  <div style="padding:0 14px 14px;border-bottom:0.5px solid var(--border);margin-bottom:8px">
+    <button id="sync-btn" onclick="syncFromSheet()" style="width:100%;font-size:12px;font-weight:500;padding:8px 0;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;cursor:pointer;font-family:inherit">🔄 시트 동기화</button>
+    <div id="sync-status" style="margin-top:5px;text-align:center"></div>
+  </div>
   <div class="nav-item active" onclick="showPage('overview')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span> Overview</div>
   <div class="nav-item" onclick="showPage('submitted')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span> 제출 완료 <span class="nav-badge" id="nav-sub-count">-</span></div>
   <div class="nav-item" onclick="showPage('missing')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="currentColor"/></svg></span> 미제출자 <span class="nav-badge danger" id="nav-miss-count">-</span></div>
   <div class="nav-item" onclick="showPage('discord')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 5.5h2l5-3v11l-5-3H2V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 6a2 2 0 010 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 10.5l-1 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span> 디스코드 공지</div>
-  <div class="nav-item" onclick="showPage('upload')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 10V3M5 6l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span> 데이터 업로드</div>
 </nav>
 
 <main class="main">
@@ -118,7 +121,11 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
     <div class="page-title">Overview</div>
     <div class="page-sub">챌린지 전체 현황을 확인하세요</div>
   </div>
-  <div id="overview-toggles" class="challenge-toggles"></div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <div id="overview-toggles" class="challenge-toggles" style="margin-bottom:0;flex:1"></div>
+    <button onclick="addCustomChallenge()" class="btn" style="font-size:11px;padding:5px 12px;flex-shrink:0">➕ 챌린지 추가</button>
+    <button onclick="removeLastChallenge()" class="btn" style="font-size:11px;padding:5px 12px;flex-shrink:0;color:var(--pink)">➖ 삭제</button>
+  </div>
   <div class="metrics">
     <div class="metric"><div class="metric-label">전체 신청자</div><div class="metric-value" id="m-total">-</div></div>
     <div class="metric"><div class="metric-label">제출 완료</div><div class="metric-value green" id="m-submitted">-</div></div>
@@ -127,7 +134,7 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">챌린지별 현황</span></div>
-    <table><thead><tr><th>챌린지</th><th>신청자</th><th>제출</th><th>미제출</th><th>제출률</th><th>메모</th></tr></thead>
+    <table><thead><tr><th>챌린지</th><th>신청자 <span style="font-size:9px;opacity:0.7">(클릭수정)</span></th><th>제출</th><th>미제출</th><th>제출률</th><th>메모</th></tr></thead>
     <tbody id="challenge-summary"></tbody></table>
   </div>
   <div class="card">
@@ -172,13 +179,7 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
     </div>
     <div id="best-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
   </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">중복 제출 감지</span><span style="font-size:11px;color:var(--text3)">같은 이메일로 여러 번 제출한 경우</span></div>
-    <table><thead><tr><th>이름</th><th>이메일</th><th>챌린지</th><th>제출 링크</th></tr></thead>
-    <tbody id="duplicates-table"></tbody></table>
-  </div>
 
-</div>
 
 <!-- Submitted -->
 <div class="page" id="page-submitted">
@@ -244,39 +245,6 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
   </div>
 </div>
 
-<!-- Upload -->
-<div class="page" id="page-upload">
-  <div class="page-header">
-    <div class="page-title">데이터 업로드</div>
-    <div class="page-sub">새 챌린지 데이터를 CSV 형식으로 추가하세요</div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">새 데이터 추가</span></div>
-    <p style="font-size:12px;color:var(--text3);margin-bottom:12px">CSV 형식 — 신청자: <code>email, 이름, 핸들, 국가, 챌린지번호</code> | 제출: <code>email, 이름, 핸들, url, 챌린지번호</code></p>
-    <div style="margin-bottom:10px">
-      <select id="paste-type">
-        <option value="applicants">신청자 목록 (제품 수령자)</option>
-        <option value="submissions">제출 목록 (콘텐츠 링크)</option>
-      </select>
-    </div>
-    <textarea id="paste-data" rows="8" placeholder="예시 (신청자):&#10;example@gmail.com,홍길동,handle123,Canada,3&#10;&#10;예시 (제출):&#10;example@gmail.com,홍길동,handle123,https://tiktok.com/xxx,3"></textarea>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn accent" onclick="parseAndAdd()">➕ 데이터 추가</button>
-      <button class="btn" onclick="showStoredSummary()">📋 저장된 데이터 확인</button>
-      <button class="btn" style="color:var(--pink)" onclick="resetData()">🔄 전체 리셋</button>
-    </div>
-    <div id="upload-msg"></div>
-    <div id="stored-summary" style="margin-top:10px;font-size:12px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:10px 14px;display:none"></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">GitHub에서 데이터 파일로 관리하는 방법</span></div>
-    <p style="font-size:12px;color:var(--text3);margin-bottom:16px">매번 Claude에게 요청하지 않고, GitHub에서 <code>data.js</code> 파일만 수정하면 자동으로 업데이트됩니다.</p>
-    <div class="guide-step"><div class="step-num">1</div><div class="step-text">GitHub repository에서 <code>New file</code> 클릭 → 파일명 <code>data.js</code> 로 생성</div></div>
-    <div class="guide-step"><div class="step-num">2</div><div class="step-text">아래 형식으로 신청자/제출 데이터 작성 후 Commit:<br><code>window.EXTRA_APPLICANTS = [{email:"...",name:"...",handle:"...",country:"...",challenge:3}];</code><br><code>window.EXTRA_SUBMISSIONS = [{email:"...",name:"...",handle:"...",url:"...",challenge:3}];</code></div></div>
-    <div class="guide-step"><div class="step-num">3</div><div class="step-text"><code>index.html</code> 의 <code>&lt;/body&gt;</code> 태그 바로 위에 <code>&lt;script src="data.js"&gt;&lt;/script&gt;</code> 추가 → 이후부터 data.js만 수정하면 자동 반영!</div></div>
-    <div class="guide-step"><div class="step-num">4</div><div class="step-text">또는 Claude에게 새 신청자/제출 PDF를 주면 업데이트된 <code>index.html</code>을 바로 만들어드립니다 😊</div></div>
-  </div>
-</div>
 
 </main>
 </div>
@@ -658,6 +626,10 @@ let submissions = [...ALL_SUBMISSIONS_BASE, ...(window.EXTRA_SUBMISSIONS||[]), .
 // ============================================================
 let selectedChallenge = "all";
 let challengeMemos = JSON.parse(localStorage.getItem('ng_memos')||'{}');
+// 신청자 수 수동 입력 (챌린지별)
+let applicantCounts = JSON.parse(localStorage.getItem('ng_applicant_counts')||'{}');
+// 커스텀 챌린지 번호 (5번 이상 추가용)
+let customChallenges = JSON.parse(localStorage.getItem('ng_custom_challenges')||'[]');
 
 const ne = id => document.getElementById(id);
 const norm = e => (e||"").toLowerCase().trim();
@@ -757,28 +729,21 @@ function updateMetrics(){
     const mc = a2.length - sc;
     const r = a2.length ? Math.round(sc/a2.length*100) : 0;
     const memo = challengeMemos[n]||"";
+  const manualCount = applicantCounts[n];
+  const displayCount = manualCount !== undefined ? manualCount : a2.length;
+  const missCount = manualCount !== undefined ? (manualCount - sc) : mc;
+  const rateVal = displayCount > 0 ? Math.round(sc/displayCount*100) : r;
   return`<tr>
       <td><span class="badge badge-blue">챌린지 ${n}</span></td>
-      <td>${a2.length}</td>
+      <td><span onclick="editApplicantCount(${n}, this)" style="cursor:pointer;padding:2px 8px;border-radius:4px;background:var(--surface3);font-size:12px;font-family:var(--font-mono)" title="클릭해서 수정">${displayCount}</span></td>
       <td style="color:var(--accent);font-weight:500">${sc}</td>
-      <td style="color:var(--pink);font-weight:500">${mc}</td>
-      <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${r}%"></div></div><span class="prog-pct">${r}%</span></div></td>
+      <td style="color:var(--pink);font-weight:500">${missCount}</td>
+      <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${rateVal}%"></div></div><span class="prog-pct">${rateVal}%</span></div></td>
       <td><div class="memo-cell" onclick="editMemo(${n}, this)">
         ${memo ? `<span class="memo-text">${memo}</span>` : `<span class="memo-placeholder">+ 메모 추가</span>`}
       </div></td>
     </tr>`;
   }).join("");
-
-  // Duplicates
-  const dups = getDuplicates();
-  ne("duplicates-table").innerHTML = dups.length===0
-    ? '<tr><td colspan="4" class="empty">중복 제출 없음 ✓</td></tr>'
-    : dups.map(d=>`<tr>
-        <td style="font-weight:500">${d.name}</td>
-        <td style="font-size:12px;color:var(--text2)">${d.email}</td>
-        <td><span class="badge badge-blue">챌린지 ${d.challenge}</span></td>
-        <td><div class="sub-links">${d.urls.map((u,i)=>`<a class="link" href="${u}" target="_blank">링크 ${i+1}</a>`).join("")}</div></td>
-      </tr>`).join("");
 }
 
 // ============================================================
@@ -822,6 +787,28 @@ function renderMissing(){
 // ============================================================
 // 디스코드 공지
 // ============================================================
+function editApplicantCount(challengeNo, span){
+  const current = applicantCounts[challengeNo] !== undefined ? applicantCounts[challengeNo] : span.textContent.trim();
+  const input = document.createElement("input");
+  input.type = "number";
+  input.value = current;
+  input.min = 0;
+  input.style.cssText = "width:60px;font-size:12px;padding:2px 6px;border-radius:4px;border:1px solid var(--accent);background:var(--surface2);color:var(--text);font-family:var(--font-mono);text-align:center";
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+  function save(){
+    const val = parseInt(input.value);
+    if(!isNaN(val) && val >= 0){
+      applicantCounts[challengeNo] = val;
+      localStorage.setItem('ng_applicant_counts', JSON.stringify(applicantCounts));
+    }
+    updateMetrics();
+  }
+  input.addEventListener("blur", save);
+  input.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key==="Escape") input.blur(); });
+}
+
 function editMemo(challengeNo, cell){
   const current = challengeMemos[challengeNo]||"";
   const input = document.createElement("textarea");
@@ -892,64 +879,11 @@ function goDiscord(){showPage('discord');generateDiscord();}
 // ============================================================
 // CSV 데이터 추가
 // ============================================================
-function parseAndAdd(){
-  const type=ne("paste-type").value;
-  const raw=ne("paste-data").value.trim();
-  const msgEl=ne("upload-msg");
-  if(!raw){msgEl.className="msg-err";msgEl.textContent="데이터를 입력해 주세요.";return;}
-  const lines=raw.split("\n").filter(l=>l.trim());
-  const first=lines[0].toLowerCase();
-  const dataLines=first.includes("email")||first.includes("name")?lines.slice(1):lines;
-  let added=0;
-  const newApplicants=[], newSubmissions=[];
-  dataLines.forEach(line=>{
-    const p=line.split(",").map(x=>x.trim());
-    if(type==="applicants"&&p.length>=2){
-      const item={email:p[0],name:p[1],handle:p[2]||"",country:p[3]||"",challenge:parseInt(p[4])||1};
-      applicants.push(item);newApplicants.push(item);added++;
-    } else if(type==="submissions"&&p.length>=3){
-      const item={email:p[0],name:p[1],handle:p[2]||"",url:p[3]||"",challenge:parseInt(p[4])||1};
-      submissions.push(item);newSubmissions.push(item);added++;
-    }
-  });
-  // localStorage에 누적 저장
-  if(newApplicants.length){
-    const prev=JSON.parse(localStorage.getItem('ng_extra_applicants')||'[]');
-    localStorage.setItem('ng_extra_applicants',JSON.stringify([...prev,...newApplicants]));
-  }
-  if(newSubmissions.length){
-    const prev=JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]');
-    localStorage.setItem('ng_extra_submissions',JSON.stringify([...prev,...newSubmissions]));
-  }
-  msgEl.className="msg-ok";msgEl.textContent=`✅ ${added}건 추가 완료 (새로고침해도 유지됩니다)`;
-  renderToggles();updateMetrics();renderSubmitted();renderMissing();generateDiscord();
-}
 
-function showStoredSummary(){
-  const extraApps = JSON.parse(localStorage.getItem('ng_extra_applicants')||'[]');
-  const extraSubs = JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]');
-  const el = ne("stored-summary");
-  if(extraApps.length===0 && extraSubs.length===0){
-    el.textContent = "저장된 추가 데이터 없음 (챌린지 1, 2 기본 데이터만 사용 중)";
-  } else {
-    const appChs = [...new Set(extraApps.map(a=>a.challenge))].sort();
-    const subChs = [...new Set(extraSubs.map(s=>s.challenge))].sort();
-    el.innerHTML = `💾 저장된 추가 데이터:<br>
-      • 신청자: ${extraApps.length}명 (챌린지 ${appChs.join(", ")||"-"})<br>
-      • 제출자: ${extraSubs.length}명 (챌린지 ${subChs.join(", ")||"-"})`;
-  }
-  el.style.display = "block";
-}
 
-function resetData(){
-  if(!confirm("추가된 챌린지 데이터가 모두 삭제됩니다. 계속할까요?")) return;
-  localStorage.removeItem('ng_extra_applicants');
-  localStorage.removeItem('ng_extra_submissions');
-  applicants=[...ALL_APPLICANTS_BASE,...(window.EXTRA_APPLICANTS||[])];
-  submissions=[...ALL_SUBMISSIONS_BASE,...(window.EXTRA_SUBMISSIONS||[])];
-  ne("upload-msg").className="msg-ok";ne("upload-msg").textContent="🔄 초기 데이터로 리셋 완료";
-  renderToggles();updateMetrics();renderSubmitted();renderMissing();generateDiscord();
-}
+
+
+
 
 // ============================================================
 // 베스트 콘텐츠
@@ -1150,13 +1084,39 @@ function renderBest(){
 
 
 // ============================================================
+// 챌린지 번호 관리
+// ============================================================
+function addCustomChallenge(){
+  const nums = getChallengeNums();
+  const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+  if(!customChallenges.includes(next)){
+    customChallenges.push(next);
+    localStorage.setItem('ng_custom_challenges', JSON.stringify(customChallenges));
+  }
+  renderToggles(); updateMetrics();
+}
+
+function removeLastChallenge(){
+  const nums = getChallengeNums();
+  if(nums.length === 0) return;
+  const last = Math.max(...nums);
+  // 데이터가 있는 챌린지는 삭제 불가
+  const hasData = [...applicants,...submissions].some(s=>s.challenge===last);
+  if(hasData){ alert(`챌린지 ${last}에 데이터가 있어서 삭제할 수 없어요.`); return; }
+  customChallenges = customChallenges.filter(c=>c!==last);
+  localStorage.setItem('ng_custom_challenges', JSON.stringify(customChallenges));
+  if(selectedChallenge == last) selectedChallenge = "all";
+  renderToggles(); updateMetrics();
+}
+
+// ============================================================
 // 페이지 전환
 // ============================================================
 function showPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   ne("page-"+name).classList.add("active");
-  const pages=["overview","submitted","missing","discord","upload"];
+  const pages=["overview","submitted","missing","discord"];
   document.querySelectorAll(".nav-item")[pages.indexOf(name)].classList.add("active");
   if(name==="submitted")renderSubmitted();
   if(name==="missing")renderMissing();
