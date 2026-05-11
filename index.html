@@ -6,93 +6,79 @@
 <title>Nuriglow Discord Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f3ef;--surface:#ffffff;--surface2:#f0eeea;--surface3:#e8e6e0;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);--text:#1a1a2e;--text2:#5a5a72;--text3:#9a9aac;--accent:#5865f2;--accent2:#4752c4;--pink:#eb459e;--blue:#5865f2;--orange:#f5a623;--radius:10px;--radius-lg:16px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+body{font-family:'DM Sans',sans-serif;background:#f4f3ef;color:#1a1a2e;min-height:100vh;font-size:14px}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:220px;background:#ffffff;border-right:0.5px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:fixed;top:0;left:0;bottom:0;z-index:10}
-.logo-area{padding:0 20px 24px;border-bottom:0.5px solid var(--border);margin-bottom:16px}
+.sidebar{width:220px;background:#fff;border-right:0.5px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;padding:24px 0;position:fixed;top:0;left:0;bottom:0;z-index:10;overflow-y:auto}
+.logo-area{padding:0 20px 20px;border-bottom:0.5px solid rgba(0,0,0,0.08);margin-bottom:8px}
 .logo-mark{width:44px;height:44px;border-radius:10px;overflow:hidden;margin-bottom:10px}
-.logo-mark img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.logo-name{font-size:13px;font-weight:600;color:var(--text);letter-spacing:0.3px}
-.logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
-.nav-item:hover{color:var(--text);background:var(--surface2)}
-.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(88,101,242,0.08)}
-.nav-icon{font-size:14px;width:18px;text-align:center}
-.nav-badge{margin-left:auto;background:var(--surface3);color:var(--text2);font-size:10px;padding:1px 7px;border-radius:99px;font-family:'DM Mono',monospace}
-.nav-badge.danger{background:rgba(255,107,157,0.15);color:var(--pink)}
+.logo-mark img{width:100%;height:100%;object-fit:cover}
+.logo-name{font-size:13px;font-weight:600;color:#1a1a2e}
+.logo-sub{font-size:11px;color:#9a9aac;margin-top:2px}
+.sync-area{padding:0 14px 14px;border-bottom:0.5px solid rgba(0,0,0,0.08);margin-bottom:8px}
+.sync-btn{width:100%;font-size:12px;font-weight:500;padding:8px 0;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;cursor:pointer;font-family:inherit}
+.sync-btn:hover{background:#bfdbfe}
+.sync-btn:disabled{opacity:0.6;cursor:not-allowed}
+.sync-status{margin-top:5px;text-align:center;font-size:11px;min-height:16px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:#5a5a72;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;user-select:none}
+.nav-item:hover{color:#1a1a2e;background:#f0eeea}
+.nav-item.active{color:#5865f2;border-left-color:#5865f2;background:rgba(88,101,242,0.06)}
+.nav-icon{font-size:14px;width:18px;text-align:center;display:flex;align-items:center}
+.nav-badge{margin-left:auto;background:#e8e6e0;color:#5a5a72;font-size:10px;padding:1px 7px;border-radius:99px;font-family:'DM Mono',monospace}
+.nav-badge.danger{background:rgba(255,107,157,0.15);color:#ff6b9d}
 .main{margin-left:220px;flex:1;padding:32px;min-height:100vh}
-.page{display:none}.page.active{display:block}
-.page-header{margin-bottom:28px}
-.page-title{font-size:22px;font-weight:600;color:var(--text)}
-.page-sub{font-size:13px;color:var(--text3);margin-top:4px}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:24px}
+.page-title{font-size:22px;font-weight:600}
+.page-sub{font-size:13px;color:#9a9aac;margin-top:4px}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.metric{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
-.metric-value{font-size:28px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace}
-.metric-value.green{color:#2d8a4e}.metric-value.red{color:var(--pink)}
-.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:16px}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.card-title{font-size:13px;font-weight:500;color:var(--text)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding:0 12px 10px;border-bottom:0.5px solid var(--border)}
-td{padding:10px 12px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--surface2)}
-.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500}
-.badge-green{background:rgba(88,101,242,0.1);color:var(--accent)}
-.badge-red{background:rgba(255,107,157,0.12);color:var(--pink)}
-.badge-blue{background:rgba(100,181,246,0.12);color:var(--blue)}
-.badge-orange{background:rgba(255,171,64,0.12);color:var(--orange)}
+.metric{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px 20px}
+.metric-label{font-size:11px;color:#9a9aac;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.metric-value{font-size:28px;font-weight:600;font-family:'DM Mono',monospace}
+.metric-value.green{color:#2d8a4e}
+.metric-value.red{color:#ff6b9d}
+.card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:20px 22px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-title{font-size:13px;font-weight:500}
 .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-select,input[type=text]{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);outline:none}
-select:focus,input[type=text]:focus{border-color:var(--accent)}
-.search-wrap{display:flex;gap:8px;margin-bottom:14px}
-.search-wrap input{flex:1}
-.btn{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all 0.15s}
-.btn:hover{background:var(--surface3);color:var(--text)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10px;font-weight:500;color:#9a9aac;text-transform:uppercase;letter-spacing:0.6px;padding:0 12px 10px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.08);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f4f3ef}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500}
+.badge-blue{background:rgba(88,101,242,0.1);color:#5865f2}
+.badge-red{background:rgba(255,107,157,0.12);color:#ff6b9d}
+.badge-green{background:rgba(45,138,78,0.1);color:#2d8a4e}
+select,input[type=text]{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;border-radius:10px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#1a1a2e;outline:none}
+select:focus,input[type=text]:focus{border-color:#5865f2}
+.search-wrap{margin-bottom:14px}
+.search-wrap input{width:100%}
+.btn{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:10px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#5a5a72;cursor:pointer;transition:all 0.15s}
+.btn:hover{background:#f0eeea;color:#1a1a2e}
 .btn.accent{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;font-weight:500}
-.btn.accent:hover{background:#bfdbfe;border-color:#60a5fa}
-.link{color:var(--blue);text-decoration:none;font-size:12px}.link:hover{text-decoration:underline}
-.tag{font-size:11px;padding:2px 7px;background:var(--surface3);border-radius:4px;color:var(--text2);font-family:'DM Mono',monospace}
+.btn.accent:hover{background:#bfdbfe}
+.link{color:#5865f2;text-decoration:none;font-size:12px}
+.link:hover{text-decoration:underline}
+.tag{font-size:11px;padding:2px 7px;background:#f0eeea;border-radius:4px;color:#5a5a72;font-family:'DM Mono',monospace}
 .prog-wrap{display:flex;align-items:center;gap:8px}
-.prog-bar{flex:1;height:5px;background:var(--surface3);border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;background:var(--accent);border-radius:99px}
-.prog-pct{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;min-width:34px}
-.discord-box{background:var(--surface2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);white-space:pre-wrap;line-height:1.7;max-height:280px;overflow-y:auto}
-.discord-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-textarea{font-family:'DM Mono',monospace;font-size:12px;padding:12px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);width:100%;resize:vertical;outline:none;line-height:1.6}
-textarea:focus{border-color:var(--accent)}
-.empty{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
-.memo-cell{cursor:pointer;min-width:140px;padding:2px 0}
-.memo-cell:hover .memo-placeholder{color:var(--accent)}
-.memo-text{font-size:12px;color:var(--text2);line-height:1.5;white-space:pre-wrap;word-break:break-word}
-.memo-placeholder{font-size:12px;color:var(--text3)}
-.msg-ok{font-size:12px;color:var(--accent);margin-top:8px}
-.msg-err{font-size:12px;color:var(--pink);margin-top:8px}
-
-/* Challenge toggles */
-.challenge-toggles{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.ch-toggle{padding:6px 16px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all 0.15s}
-.ch-toggle:hover{color:var(--text);border-color:var(--text3)}
-.ch-toggle.active{background:rgba(88,101,242,0.1);color:var(--accent);border-color:var(--accent)}
-.ch-toggle.all{background:var(--surface3);color:var(--text)}
-.ch-toggle.all.active{background:rgba(88,101,242,0.1);color:var(--accent);border-color:var(--accent)}
-
-/* Duplicate links */
-.sub-links{display:flex;gap:6px;flex-wrap:wrap}
-
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
-
-/* Upload guide */
-.guide-step{display:flex;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
-.guide-step:last-child{border-bottom:none}
-.step-num{width:24px;height:24px;border-radius:50%;background:rgba(200,245,100,0.12);color:var(--accent);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.step-text{font-size:13px;color:var(--text2);line-height:1.6}
-code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text)}
+.prog-bar{flex:1;height:5px;background:#e8e6e0;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:#5865f2;border-radius:99px}
+.prog-pct{font-size:11px;color:#5a5a72;font-family:'DM Mono',monospace;min-width:34px}
+.empty{text-align:center;padding:2rem;color:#9a9aac;font-size:13px}
+.ch-toggles{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.ch-btn{padding:5px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#5a5a72;transition:all 0.15s;font-family:inherit}
+.ch-btn:hover{color:#1a1a2e;border-color:#9a9aac}
+.ch-btn.active{background:rgba(88,101,242,0.1);color:#5865f2;border-color:#5865f2}
+.memo-cell{cursor:pointer;min-width:140px}
+.memo-text{font-size:12px;color:#5a5a72;line-height:1.5;white-space:pre-wrap}
+.memo-placeholder{font-size:12px;color:#9a9aac}
+.memo-cell:hover .memo-placeholder{color:#5865f2}
+.best-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.best-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.star{cursor:pointer;font-size:16px;line-height:1}
+.discord-box{background:#f0eeea;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px;font-family:'DM Mono',monospace;font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:280px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -103,28 +89,35 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
     <div class="logo-name">Nuriglow Discord</div>
     <div class="logo-sub">Challenge Admin</div>
   </div>
-  <div style="padding:0 14px 14px;border-bottom:0.5px solid var(--border);margin-bottom:8px">
-    <button id="sync-btn" onclick="syncFromSheet()" style="width:100%;font-size:12px;font-weight:500;padding:8px 0;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;cursor:pointer;font-family:inherit">🔄 시트 동기화</button>
-    <div id="sync-status" style="margin-top:5px;text-align:center"></div>
+  <div class="sync-area">
+    <button class="sync-btn" id="sync-btn" onclick="syncFromSheet()">🔄 시트 동기화</button>
+    <div class="sync-status" id="sync-status"></div>
   </div>
-  <div class="nav-item active" onclick="showPage('overview')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span> Overview</div>
-  <div class="nav-item" onclick="showPage('submitted')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span> 제출 완료 <span class="nav-badge" id="nav-sub-count">-</span></div>
-  <div class="nav-item" onclick="showPage('missing')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="currentColor"/></svg></span> 미제출자 <span class="nav-badge danger" id="nav-miss-count">-</span></div>
-  <div class="nav-item" onclick="showPage('discord')"><span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 5.5h2l5-3v11l-5-3H2V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 6a2 2 0 010 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 10.5l-1 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span> 디스코드 공지</div>
+  <div class="nav-item active" id="nav-overview" onclick="showPage('overview')">
+    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span>
+    Overview
+  </div>
+  <div class="nav-item" id="nav-submitted" onclick="showPage('submitted')">
+    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    제출 완료 <span class="nav-badge" id="nav-sub-count">0</span>
+  </div>
+  <div class="nav-item" id="nav-missing" onclick="showPage('missing')">
+    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="currentColor"/></svg></span>
+    미제출자 <span class="nav-badge danger" id="nav-miss-count">0</span>
+  </div>
+  <div class="nav-item" id="nav-discord" onclick="showPage('discord')">
+    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 5.5h2l5-3v11l-5-3H2V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 6a2 2 0 010 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+    디스코드 공지
+  </div>
 </nav>
-
 <main class="main">
 
-<!-- Overview -->
 <div class="page active" id="page-overview">
-  <div class="page-header">
-    <div class="page-title">Overview</div>
-    <div class="page-sub">챌린지 전체 현황을 확인하세요</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-    <div id="overview-toggles" class="challenge-toggles" style="margin-bottom:0;flex:1"></div>
-    <button onclick="addCustomChallenge()" class="btn" style="font-size:11px;padding:5px 12px;flex-shrink:0">➕ 챌린지 추가</button>
-    <button onclick="removeLastChallenge()" class="btn" style="font-size:11px;padding:5px 12px;flex-shrink:0;color:var(--pink)">➖ 삭제</button>
+  <div class="page-header"><div class="page-title">Overview</div><div class="page-sub">챌린지 전체 현황</div></div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <div id="ov-toggles" class="ch-toggles" style="margin-bottom:0;flex:1"></div>
+    <button onclick="addChallenge()" class="btn" style="font-size:11px;padding:5px 12px">➕ 챌린지 추가</button>
+    <button onclick="removeChallenge()" class="btn" style="font-size:11px;padding:5px 12px;color:#ff6b9d">➖ 삭제</button>
   </div>
   <div class="metrics">
     <div class="metric"><div class="metric-label">전체 신청자</div><div class="metric-value" id="m-total">-</div></div>
@@ -134,107 +127,72 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">챌린지별 현황</span></div>
-    <table><thead><tr><th>챌린지</th><th>신청자 <span style="font-size:9px;opacity:0.7">(클릭수정)</span></th><th>제출</th><th>미제출</th><th>제출률</th><th>메모</th></tr></thead>
+    <table><thead><tr><th>챌린지</th><th>신청자</th><th>제출</th><th>미제출</th><th>제출률</th><th>메모</th></tr></thead>
     <tbody id="challenge-summary"></tbody></table>
   </div>
   <div class="card">
     <div class="card-header">
       <span class="card-title">⭐ 베스트 콘텐츠</span>
       <div class="controls">
-        <div id="best-filter-toggles" class="challenge-toggles" style="margin-bottom:0"></div>
-        <input type="text" id="best-search" placeholder="이름 검색..." oninput="renderBest()" style="width:160px">
-        <button class="btn accent" onclick="toggleBestForm()" id="best-form-toggle-btn">➕ 추가</button>
+        <div id="best-filter-toggles" class="ch-toggles" style="margin-bottom:0"></div>
+        <input type="text" id="best-search" placeholder="이름 검색..." oninput="renderBest()" style="width:150px">
+        <button class="btn accent" onclick="toggleBestForm()" id="best-form-btn">➕ 추가</button>
       </div>
     </div>
-    <div id="best-form" style="display:none;border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;background:var(--surface2)">
+    <div id="best-form" style="display:none;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:16px;background:#f4f3ef">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">크리에이터 이름</label>
-          <input type="text" id="best-name" placeholder="예: Amy Rose" style="width:100%">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">챌린지</label>
-          <select id="best-challenge" style="width:100%">
-            <option value="1">챌린지 1</option>
-            <option value="2">챌린지 2</option>
-            <option value="3">챌린지 3</option>
-            <option value="4">챌린지 4</option>
-          </select>
+        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">크리에이터 이름</label><input type="text" id="best-name" placeholder="Amy Rose" style="width:100%"></div>
+        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">챌린지</label>
+          <select id="best-challenge" style="width:100%"><option value="1">챌린지 1</option><option value="2">챌린지 2</option><option value="3">챌린지 3</option><option value="4">챌린지 4</option><option value="5">챌린지 5</option><option value="6">챌린지 6</option></select>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px">
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">콘텐츠 URL</label>
-          <input type="text" id="best-url" placeholder="https://www.tiktok.com/... 또는 instagram.com/reel/..." style="width:100%">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">메모</label>
-          <input type="text" id="best-memo" placeholder="예: 조회수 높음" style="width:100%">
-        </div>
+        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">콘텐츠 URL</label><input type="text" id="best-url" placeholder="https://..." style="width:100%"></div>
+        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">메모</label><input type="text" id="best-memo" placeholder="조회수 높음" style="width:100%"></div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn accent" onclick="addBestContent()">저장</button>
+        <button class="btn accent" onclick="addBest()">저장</button>
         <button class="btn" onclick="toggleBestForm()">취소</button>
       </div>
     </div>
-    <div id="best-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
+    <div class="best-grid" id="best-grid"></div>
   </div>
+</div>
 
-
-<!-- Submitted -->
 <div class="page" id="page-submitted">
-  <div class="page-header">
-    <div class="page-title">제출 완료</div>
-    <div class="page-sub">콘텐츠를 제출한 크리에이터 목록</div>
-  </div>
-  <div id="submitted-toggles" class="challenge-toggles"></div>
+  <div class="page-header"><div class="page-title">제출 완료</div><div class="page-sub">콘텐츠를 제출한 크리에이터 목록</div></div>
+  <div id="sub-toggles" class="ch-toggles"></div>
   <div class="card">
-    <div class="card-header">
-      <span class="card-title">제출 목록</span>
-    </div>
-    <div class="search-wrap">
-      <input type="text" id="search-sub" placeholder="이름, 이메일, 핸들 검색..." oninput="renderSubmitted()">
-    </div>
-    <table><thead><tr><th>이름</th><th>Discord ID</th><th>이메일</th><th>챌린지</th><th>링크 1</th><th>링크 2</th></tr></thead>
+    <div class="card-header"><span class="card-title">제출 목록</span></div>
+    <div class="search-wrap"><input type="text" id="search-sub" placeholder="이름, 이메일, 핸들 검색..." oninput="renderSubmitted()"></div>
+    <table><thead><tr><th>#</th><th>이름</th><th>Discord ID</th><th>이메일</th><th>챌린지</th><th>링크 1</th><th>링크 2</th></tr></thead>
     <tbody id="submitted-table"></tbody></table>
   </div>
 </div>
 
-<!-- Missing -->
 <div class="page" id="page-missing">
-  <div class="page-header">
-    <div class="page-title">미제출자</div>
-    <div class="page-sub">아직 콘텐츠를 제출하지 않은 크리에이터</div>
-  </div>
-  <div id="missing-toggles" class="challenge-toggles"></div>
+  <div class="page-header"><div class="page-title">미제출자</div><div class="page-sub">아직 콘텐츠를 제출하지 않은 크리에이터</div></div>
+  <div id="miss-toggles" class="ch-toggles"></div>
   <div class="card">
     <div class="card-header">
       <span class="card-title">미제출자 목록</span>
       <div class="controls">
-        <button class="btn" onclick="copyMissingList()">📋 목록 복사</button>
-        <button class="btn accent" onclick="goDiscord()">📢 공지 만들기</button>
+        <button class="btn" onclick="copyMissing()">📋 목록 복사</button>
+        <button class="btn accent" onclick="showPage('discord')">📢 공지 만들기</button>
       </div>
     </div>
-    <div class="search-wrap">
-      <input type="text" id="search-miss" placeholder="이름, 이메일 검색..." oninput="renderMissing()">
-    </div>
-    <table><thead><tr><th>이름</th><th>핸들</th><th>이메일</th><th>국가</th><th>상태</th></tr></thead>
+    <div class="search-wrap"><input type="text" id="search-miss" placeholder="이름, 이메일 검색..." oninput="renderMissing()"></div>
+    <table><thead><tr><th>#</th><th>이름</th><th>Discord ID</th><th>이메일</th><th>국가</th><th>챌린지</th></tr></thead>
     <tbody id="missing-table"></tbody></table>
   </div>
 </div>
 
-<!-- Discord -->
 <div class="page" id="page-discord">
-  <div class="page-header">
-    <div class="page-title">디스코드 공지</div>
-    <div class="page-sub">챌린지 공지 메시지를 자동으로 생성합니다</div>
-  </div>
+  <div class="page-header"><div class="page-title">디스코드 공지</div><div class="page-sub">챌린지 공지 메시지를 자동으로 생성합니다</div></div>
   <div class="card">
     <div class="card-header"><span class="card-title">공지 생성</span></div>
-    <div class="discord-controls">
-      <select id="discord-challenge" onchange="generateDiscord()">
-        <option value="all">전체 챌린지</option>
-      </select>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="discord-ch" onchange="generateDiscord()"><option value="all">전체 챌린지</option></select>
       <select id="discord-type" onchange="generateDiscord()">
         <option value="reminder">⏰ 마감 리마인더</option>
         <option value="missing">⚠️ 미제출자 태그</option>
@@ -245,15 +203,9 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
   </div>
 </div>
 
-
 </main>
 </div>
-</div>
-
 <script>
-// ============================================================
-// 챌린지 1 신청자 (Challenge 001 - The Glow Canvas) - 68명
-// ============================================================
 const CH1_APPLICANTS = [
   {email:"glambymichelleofficial@gmail.com",name:"Mihaela Mihova",handle:"misshell.gk",country:"Bulgaria",challenge:1},
   {email:"valioftherags@gmail.com",name:"Valeria Iodice",handle:"valioftherags",country:"Italy",challenge:1},
@@ -324,10 +276,6 @@ const CH1_APPLICANTS = [
   {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",country:"UAE",challenge:1},
   {email:"lifestyleofhaya@gmail.com",name:"Haya Khan",handle:"lifestyleofhaya",country:"UAE",challenge:1},
 ];
-
-// ============================================================
-// 챌린지 2 신청자 (Challenge 002 - 30-Second Reset)
-// ============================================================
 const CH2_APPLICANTS = [
   {email:"jlkspnl.business@gmail.com",name:"Juliaka Español",handle:"jlklogs",country:"Philippines",challenge:2},
   {email:"mariacastellanx@gmail.com",name:"Maria Castellano",handle:"marysdraft_",country:"Italy",challenge:2},
@@ -412,10 +360,55 @@ const CH2_APPLICANTS = [
   {email:"mdxglams@gmail.com",name:"Maram Dahmani",handle:"mdxglams",country:"UAE",challenge:2},
   {email:"soulandstyle25@gmail.com",name:"Mubashir Nawaz",handle:"stylebykoml",country:"UAE",challenge:2},
 ];
-
-// ============================================================
-// 챌린지 1 제출 목록 (중복 제출 포함 - 원본 그대로)
-// ============================================================
+const CH3_APPLICANTS = [
+  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:3},
+  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:3},
+  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:3},
+  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:3},
+  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",country:"United States",challenge:3},
+  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:3},
+  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:3},
+  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:3},
+  {email:"kanuchinenye12@gmail.com",name:"Chinenye Kanu",handle:"Trywithchi",country:"United States",challenge:3},
+  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:3},
+  {email:"tunmiseesther357@gmail.com",name:"Esther Olutunmise",handle:"estherugc00",country:"United States",challenge:3},
+  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:3},
+  {email:"berevoice13ugc@gmail.com",name:"Berenice Ramos H",handle:"Berevoice13",country:"United States",challenge:3},
+  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"Marlynmartinezz",country:"United States",challenge:3},
+  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:3},
+  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"Itstianale",country:"United States",challenge:3},
+  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:3},
+  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:3},
+  {email:"archu8099@gmail.com",name:"Archana Surigala",handle:"Romilly2000s",country:"United States",challenge:3},
+  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"fatimaescobar77",country:"United States",challenge:3},
+  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:3},
+  {email:"mariamercedesc23@gmail.com",name:"Maria Cueto",handle:"Mariamercedescueto",country:"United States",challenge:3},
+];
+const CH4_APPLICANTS = [
+  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:4},
+  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:4},
+  {email:"filigreefall@gmail.com",name:"Erika K",handle:"filigreefall",country:"United States",challenge:4},
+  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:4},
+  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
+  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:4},
+  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:4},
+  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:4},
+  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:4},
+  {email:"aidacanetti@gmail.com",name:"Aida Canetti",handle:"Aidasworld96",country:"United States",challenge:4},
+  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:4},
+  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",country:"United States",challenge:4},
+  {email:"dreamsy66@gmail.com",name:"Marbella Gonzalez",handle:"dreamsy66",country:"United States",challenge:4},
+  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:4},
+  {email:"chezzlaura.collab@gmail.com",name:"Laura Larivoir",handle:"chezzlaura",country:"United States",challenge:4},
+  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:4},
+  {email:"glowithsarahlee@gmail.com",name:"Sarah Lee",handle:"Glowithsarahlee",country:"United States",challenge:4},
+  {email:"collabswithfathia@gmail.com",name:"Fathia Rabiu",handle:"fathiaa.glow",country:"United States",challenge:4},
+  {email:"makeupbyalissaskye@gmail.com",name:"Alissa Ramos-Waldron",handle:"Alissaskyee",country:"United States",challenge:4},
+  {email:"fatimadugc@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
+  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:4},
+  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:4},
+  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:4},
+];
 const CH1_SUBMISSIONS = [
   {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",url:"https://www.instagram.com/reel/DU5iOUvkXAd/",challenge:1},
   {email:"katedove1@icloud.com",name:"Kate Dove",handle:"katespace0652",url:"https://www.instagram.com/reel/DU_f7GAEqi_/",challenge:1},
@@ -467,10 +460,6 @@ const CH1_SUBMISSIONS = [
   {email:"marisparkle12@gmail.com",name:"Maryam Khan",handle:"mari.lovebot",url:"https://www.tiktok.com/@mari.lovebot/video/7622605696948768020",challenge:1},
   {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",url:"https://www.instagram.com/reel/DWgPVRYCro-/",challenge:1},
 ];
-
-// ============================================================
-// 챌린지 2 제출 목록
-// ============================================================
 const CH2_SUBMISSIONS = [
   {email:"jlkspnl.business@gmail.com",name:"Juliaka Espanol",handle:"jlklogs",url:"https://vt.tiktok.com/ZSmnBHSPX/",challenge:2},
   {email:"bondadmary@gmail.com",name:"Mary Louise Bondad",handle:"merilowisss",url:"https://vt.tiktok.com/ZSmWNYL9j/",challenge:2},
@@ -514,38 +503,6 @@ const CH2_SUBMISSIONS = [
   {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",url:"https://vm.tiktok.com/ZGdusQemq/",challenge:2},
   {email:"minabfaisal@gmail.com",name:"Cherrycoca",handle:"cherrycoca12",url:"https://vt.tiktok.com/ZSuusYFxw/",challenge:2},
 ];
-
-// ============================================================
-// 챌린지 3 신청자 (Challenge 003) - 22명
-// ============================================================
-const CH3_APPLICANTS = [
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:3},
-  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:3},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:3},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:3},
-  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",country:"United States",challenge:3},
-  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:3},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:3},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:3},
-  {email:"kanuchinenye12@gmail.com",name:"Chinenye Kanu",handle:"Trywithchi",country:"United States",challenge:3},
-  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:3},
-  {email:"tunmiseesther357@gmail.com",name:"Esther Olutunmise",handle:"estherugc00",country:"United States",challenge:3},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:3},
-  {email:"berevoice13ugc@gmail.com",name:"Berenice Ramos H",handle:"Berevoice13",country:"United States",challenge:3},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"Marlynmartinezz",country:"United States",challenge:3},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:3},
-  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"Itstianale",country:"United States",challenge:3},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:3},
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:3},
-  {email:"archu8099@gmail.com",name:"Archana Surigala",handle:"Romilly2000s",country:"United States",challenge:3},
-  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"fatimaescobar77",country:"United States",challenge:3},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:3},
-  {email:"mariamercedesc23@gmail.com",name:"Maria Cueto",handle:"Mariamercedescueto",country:"United States",challenge:3},
-];
-
-// ============================================================
-// 챌린지 3 제출 목록 (중복 포함)
-// ============================================================
 const CH3_SUBMISSIONS = [
   {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",url:"https://www.instagram.com/reel/DWOuSQZjNak/",challenge:3},
   {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",url:"https://www.instagram.com/reel/DWO55c0xvi6/",challenge:3},
@@ -566,39 +523,6 @@ const CH3_SUBMISSIONS = [
   {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.tiktok.com/@gens.archive/video/7620681047608544525",challenge:3},
   {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.instagram.com/reel/DWQS1x1CjPP/",challenge:3},
 ];
-
-// ============================================================
-// 챌린지 4 신청자 (Challenge 004) - 23명
-// ============================================================
-const CH4_APPLICANTS = [
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:4},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:4},
-  {email:"filigreefall@gmail.com",name:"Erika K",handle:"filigreefall",country:"United States",challenge:4},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:4},
-  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
-  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:4},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:4},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:4},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:4},
-  {email:"aidacanetti@gmail.com",name:"Aida Canetti",handle:"Aidasworld96",country:"United States",challenge:4},
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:4},
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",country:"United States",challenge:4},
-  {email:"dreamsy66@gmail.com",name:"Marbella Gonzalez",handle:"dreamsy66",country:"United States",challenge:4},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:4},
-  {email:"chezzlaura.collab@gmail.com",name:"Laura Larivoir",handle:"chezzlaura",country:"United States",challenge:4},
-  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:4},
-  {email:"glowithsarahlee@gmail.com",name:"Sarah Lee",handle:"Glowithsarahlee",country:"United States",challenge:4},
-  {email:"collabswithfathia@gmail.com",name:"Fathia Rabiu",handle:"fathiaa.glow",country:"United States",challenge:4},
-  {email:"makeupbyalissaskye@gmail.com",name:"Alissa Ramos-Waldron",handle:"Alissaskyee",country:"United States",challenge:4},
-  {email:"fatimadugc@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:4},
-  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:4},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:4},
-];
-
-// ============================================================
-// 챌린지 4 제출 목록
-// ============================================================
 const CH4_SUBMISSIONS = [
   {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",url:"https://www.instagram.com/reel/DWg-3EghWZ9/",challenge:4},
   {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",url:"https://www.instagram.com/reel/DWeDmAzETCM/",challenge:4},
@@ -608,644 +532,357 @@ const CH4_SUBMISSIONS = [
   {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.instagram.com/reel/DWmyWjVkpzI/",challenge:4},
   {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"TT_rosariomaria1716",url:"https://vt.tiktok.com/ZSH6hkWqo/",challenge:4},
 ];
-
-// ============================================================
-// 외부 data.js 에서 추가 데이터 로드 (있으면 자동 병합)
-// ============================================================
-const ALL_APPLICANTS_BASE = [...CH1_APPLICANTS, ...CH2_APPLICANTS, ...CH3_APPLICANTS, ...CH4_APPLICANTS];
-const ALL_SUBMISSIONS_BASE = [...CH1_SUBMISSIONS, ...CH2_SUBMISSIONS, ...CH3_SUBMISSIONS, ...CH4_SUBMISSIONS];
-
-// localStorage에서 저장된 extra 데이터 로드
-const storedApplicants = JSON.parse(localStorage.getItem('ng_extra_applicants')||'[]');
-const storedSubmissions = JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]');
-
-let applicants = [...ALL_APPLICANTS_BASE, ...(window.EXTRA_APPLICANTS||[]), ...storedApplicants];
-let submissions = [...ALL_SUBMISSIONS_BASE, ...(window.EXTRA_SUBMISSIONS||[]), ...storedSubmissions];
-
-// ============================================================
-// Google Sheets CSV 연동
-// ============================================================
+const ALL_APPLICANTS_BASE = [...CH1_APPLICANTS,...CH2_APPLICANTS,...CH3_APPLICANTS,...CH4_APPLICANTS];
+const ALL_SUBMISSIONS_BASE = [...CH1_SUBMISSIONS,...CH2_SUBMISSIONS,...CH3_SUBMISSIONS,...CH4_SUBMISSIONS];
 const GSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXENsmny17_cl8EEsokPXcOEQ7o6tNEEjKkPZBbGziQou1gO5eygQ5ayqfGHJLjRpiuPdjfcGOPscC/pub?gid=0&single=true&output=csv";
 
-function parseCSVLine(line){
-  const result = [];
-  let cur = "", inQuote = false;
-  for(let i = 0; i < line.length; i++){
-    const ch = line[i];
-    if(ch === '"'){
-      if(inQuote && line[i+1] === '"'){ cur += '"'; i++; }
-      else inQuote = !inQuote;
-    } else if(ch === "," && !inQuote){
-      result.push(cur); cur = "";
-    } else { cur += ch; }
-  }
-  result.push(cur);
-  return result;
-}
-
-async function syncFromSheet(){
-  const btn = ne("sync-btn");
-  const status = ne("sync-status");
-  if(!btn) return;
-  try {
-    btn.textContent = "⏳ 동기화 중...";
-    btn.disabled = true;
-    if(status) status.textContent = "";
-
-    const res = await fetch(GSHEET_CSV_URL);
-    if(!res.ok) throw new Error("CSV 불러오기 실패 (" + res.status + ")");
-    const text = await res.text();
-    const lines = text.trim().split("\n");
-
-    // 구분자 자동 감지 (탭 or 쉼표)
-    const firstLine = lines[0] || "";
-    const delimiter = firstLine.includes("\t") ? "\t" : ",";
-
-    // A=타임스탬프, B=UserID, C=Username, D=Discord닉, E=FullName, F=Email, G=URL1, H=URL2, I=챌린지No
-    const existingKeys = new Set(
-      submissions.map(s => (s.email||"").toLowerCase() + "|" + s.challenge + "|" + (s.url||""))
-    );
-
-    let added = 0, skipped = 0;
-    const newSubs = [];
-
-    for(let i = 1; i < lines.length; i++){
-      const cols = delimiter === "\t" ? lines[i].split("\t") : parseCSVLine(lines[i]);
-      if(cols.length < 9) continue;
-      const email     = (cols[5]||"").trim().toLowerCase();
-      const name      = (cols[4]||"").trim();
-      const handle    = (cols[2]||"").trim();
-      const url1      = (cols[6]||"").trim();
-      const url2      = (cols[7]||"").trim();
-      const chRaw     = (cols[8]||"").trim().replace(/[^0-9]/g,"");
-      const challenge = parseInt(chRaw);
-
-      if(!email || !url1 || isNaN(challenge) || challenge < 1) continue;
-
-      const key1 = email + "|" + challenge + "|" + url1;
-      if(!existingKeys.has(key1)){
-        existingKeys.add(key1);
-        newSubs.push({email, name, handle, url: url1, challenge});
-        added++;
-      } else { skipped++; }
-
-      if(url2 && url2.startsWith("http")){
-        const key2 = email + "|" + challenge + "|" + url2;
-        if(!existingKeys.has(key2)){
-          existingKeys.add(key2);
-          newSubs.push({email, name, handle, url: url2, challenge});
-        }
-      }
-    }
-
-    if(newSubs.length > 0){
-      submissions.push(...newSubs);
-      const prev = JSON.parse(localStorage.getItem("ng_extra_submissions")||"[]");
-      localStorage.setItem("ng_extra_submissions", JSON.stringify([...prev, ...newSubs]));
-    }
-
-    renderToggles(); updateMetrics(); renderSubmitted(); renderMissing(); generateDiscord(); renderBest();
-
-    const now = new Date().toLocaleTimeString("ko-KR");
-    if(status) status.innerHTML = `<span style="color:#2d8a4e;font-size:11px">✅ ${now} — 신규 ${added}건</span>`;
-
-  } catch(e) {
-    if(status) status.innerHTML = `<span style="color:var(--pink);font-size:11px">❌ ${e.message}</span>`;
-  } finally {
-    btn.textContent = "🔄 시트 동기화";
-    btn.disabled = false;
-  }
-}
-
-// ============================================================
-// 상태
-// ============================================================
-let selectedChallenge = "all";
+let applicants = [...ALL_APPLICANTS_BASE, ...(JSON.parse(localStorage.getItem('ng_extra_applicants')||'[]'))];
+let submissions = [...ALL_SUBMISSIONS_BASE, ...(JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]'))];
+let selectedChallenge = 'all';
 let challengeMemos = JSON.parse(localStorage.getItem('ng_memos')||'{}');
-// 신청자 수 수동 입력 (챌린지별)
 let applicantCounts = JSON.parse(localStorage.getItem('ng_applicant_counts')||'{}');
-// 커스텀 챌린지 번호 (5번 이상 추가용)
 let customChallenges = JSON.parse(localStorage.getItem('ng_custom_challenges')||'[]');
-
-const ne = id => document.getElementById(id);
-const norm = e => (e||"").toLowerCase().trim();
-
-function getChallengeNums(){
-  return [...new Set([...applicants,...submissions].map(s=>s.challenge))].filter(Boolean).sort((a,b)=>a-b);
-}
-
-// ============================================================
-// 토글 렌더링
-// ============================================================
-function renderToggles(){
-  const nums = getChallengeNums();
-  const html = `<button class="ch-toggle all ${selectedChallenge==='all'?'active':''}" onclick="setChallenge('all')">전체</button>`
-    + nums.map(n=>`<button class="ch-toggle ${selectedChallenge==n?'active':''}" onclick="setChallenge(${n})">챌린지 ${n}</button>`).join("");
-  ["overview-toggles","submitted-toggles","missing-toggles"].forEach(id=>{
-    if(ne(id)) ne(id).innerHTML = html;
-  });
-  // Discord select
-  const ds = ne("discord-challenge");
-  if(ds){
-    const cur = ds.value;
-    ds.innerHTML = '<option value="all">전체 챌린지</option>' + nums.map(n=>`<option value="${n}">챌린지 ${n}</option>`).join("");
-    ds.value = cur;
-  }
-}
-
-function setChallenge(cn){
-  selectedChallenge = cn;
-  renderToggles();
-  updateMetrics();
-  renderSubmitted();
-  renderMissing();
-  generateDiscord();
-}
-
-// ============================================================
-// 신청자/제출 필터
-// ============================================================
-function getApplicants(cn){
-  if(cn==="all") return applicants;
-  // 해당 챌린지 신청자만
-  return applicants.filter(a=>a.challenge==cn);
-}
-
-function getSubmittedRows(cn){
-  const src = cn==="all" ? submissions : submissions.filter(s=>s.challenge==cn);
-  const seen=new Set(), res=[];
-  src.forEach(s=>{const k=norm(s.email)+"|"+s.challenge;if(!seen.has(k)){seen.add(k);res.push(s);}});
-  return res;
-}
-
-function getMissing(cn){
-  const apps = getApplicants(cn);
-  const subEmails = new Set(
-    (cn==="all"?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email))
-  );
-  return apps.filter(a=>!subEmails.has(norm(a.email)));
-}
-
-// ============================================================
-// 중복 감지 (같은 이메일+챌린지로 여러 URL 제출)
-// ============================================================
-function getDuplicates(){
-  const map={};
-  submissions.forEach(s=>{
-    const k=norm(s.email)+"|"+s.challenge;
-    if(!map[k]) map[k]={name:s.name,email:s.email,challenge:s.challenge,urls:[]};
-    map[k].urls.push(s.url);
-  });
-  return Object.values(map).filter(v=>v.urls.length>1);
-}
-
-// ============================================================
-// 메트릭 & 요약
-// ============================================================
-function updateMetrics(){
-  const cn = selectedChallenge;
-  const apps = getApplicants(cn);
-  const subEmails = new Set((cn==="all"?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
-  const submitted = apps.filter(a=>subEmails.has(norm(a.email))).length;
-  const missing = apps.length - submitted;
-  const rate = apps.length ? Math.round(submitted/apps.length*100) : 0;
-  ne("m-total").textContent = apps.length;
-  ne("m-submitted").textContent = submitted;
-  ne("m-missing").textContent = missing;
-  ne("m-rate").textContent = rate+"%";
-  ne("nav-sub-count").textContent = submitted;
-  ne("nav-miss-count").textContent = missing;
-
-  // Challenge summary table
-  const nums = getChallengeNums();
-  ne("challenge-summary").innerHTML = nums.map(n=>{
-    const a2 = applicants.filter(a=>a.challenge==n);
-    const se = new Set(submissions.filter(s=>s.challenge==n).map(s=>norm(s.email)));
-    const sc = a2.filter(a=>se.has(norm(a.email))).length;
-    const mc = a2.length - sc;
-    const r = a2.length ? Math.round(sc/a2.length*100) : 0;
-    const memo = challengeMemos[n]||"";
-  const manualCount = applicantCounts[n];
-  const displayCount = manualCount !== undefined ? manualCount : a2.length;
-  const missCount = manualCount !== undefined ? (manualCount - sc) : mc;
-  const rateVal = displayCount > 0 ? Math.round(sc/displayCount*100) : r;
-  return`<tr>
-      <td><span class="badge badge-blue">챌린지 ${n}</span></td>
-      <td><span onclick="editApplicantCount(${n}, this)" style="cursor:pointer;padding:2px 8px;border-radius:4px;background:var(--surface3);font-size:12px;font-family:var(--font-mono)" title="클릭해서 수정">${displayCount}</span></td>
-      <td style="color:var(--accent);font-weight:500">${sc}</td>
-      <td style="color:var(--pink);font-weight:500">${missCount}</td>
-      <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${rateVal}%"></div></div><span class="prog-pct">${rateVal}%</span></div></td>
-      <td><div class="memo-cell" onclick="editMemo(${n}, this)">
-        ${memo ? '<span class="memo-text">'+memo+'</span>' : '<span class="memo-placeholder">+ 메모 추가</span>'}
-      </div></td>
-    </tr>`;
-  }).join("");
-}
-
-// ============================================================
-// 제출 완료 테이블
-// ============================================================
-function renderSubmitted(){
-  const cn = selectedChallenge;
-  const q = norm(ne("search-sub").value);
-  let rows = getSubmittedRows(cn);
-  if(q) rows = rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
-  ne("submitted-table").innerHTML = rows.length===0
-    ? '<tr><td colspan="6" class="empty">결과 없음</td></tr>'
-    : rows.map(r=>{
-        // 같은 이메일+챌린지의 URL2 찾기
-        const allUrls = submissions.filter(s=>
-          norm(s.email)===norm(r.email) && s.challenge===r.challenge
-        ).map(s=>s.url);
-        const url2 = allUrls.length > 1 ? allUrls[1] : null;
-        return `<tr>
-        <td style="font-weight:500">${r.name||"-"}</td>
-        <td><span class="tag">@${r.handle||"-"}</span></td>
-        <td style="color:var(--text2);font-size:12px">${r.email||"-"}</td>
-        <td><span class="badge badge-blue">챌린지 ${r.challenge}</span></td>
-        <td><a class="link" href="${r.url}" target="_blank">🔗 링크1</a></td>
-        <td>${url2 ? '<a class="link" href="'+url2+'" target="_blank">🔗 링크2</a>' : '-'}</td>
-      </tr>`;
-      }).join("");
-}
-
-// ============================================================
-// 미제출자 테이블
-// ============================================================
-function renderMissing(){
-  const cn = selectedChallenge;
-  const q = norm(ne("search-miss").value);
-  let rows = getMissing(cn);
-  if(q) rows = rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
-  ne("missing-table").innerHTML = rows.length===0
-    ? '<tr><td colspan="5" class="empty">미제출자 없음 🎉</td></tr>'
-    : rows.map(r=>`<tr>
-        <td style="font-weight:500">${r.name||"-"}</td>
-        <td><span class="tag">@${r.handle||"-"}</span></td>
-        <td style="color:var(--text2);font-size:12px">${r.email||"-"}</td>
-        <td style="font-size:12px;color:var(--text3)">${r.country||"-"}</td>
-        <td><span class="badge badge-red">미제출</span></td>
-      </tr>`).join("");
-}
-
-// ============================================================
-// 디스코드 공지
-// ============================================================
-function editApplicantCount(challengeNo, span){
-  const current = applicantCounts[challengeNo] !== undefined ? applicantCounts[challengeNo] : span.textContent.trim();
-  const input = document.createElement("input");
-  input.type = "number";
-  input.value = current;
-  input.min = 0;
-  input.style.cssText = "width:60px;font-size:12px;padding:2px 6px;border-radius:4px;border:1px solid var(--accent);background:var(--surface2);color:var(--text);font-family:var(--font-mono);text-align:center";
-  span.replaceWith(input);
-  input.focus();
-  input.select();
-  function save(){
-    const val = parseInt(input.value);
-    if(!isNaN(val) && val >= 0){
-      applicantCounts[challengeNo] = val;
-      localStorage.setItem('ng_applicant_counts', JSON.stringify(applicantCounts));
-    }
-    updateMetrics();
-  }
-  input.addEventListener("blur", save);
-  input.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key==="Escape") input.blur(); });
-}
-
-function editMemo(challengeNo, cell){
-  const current = challengeMemos[challengeNo]||"";
-  const input = document.createElement("textarea");
-  input.value = current;
-  input.style.cssText = "width:100%;min-height:60px;font-size:12px;padding:6px;border-radius:6px;border:1px solid var(--accent);background:var(--surface2);color:var(--text);font-family:var(--font-sans);resize:vertical;outline:none";
-  cell.innerHTML = "";
-  cell.appendChild(input);
-  input.focus();
-  function save(){
-    const val = input.value.trim();
-    challengeMemos[challengeNo] = val;
-    localStorage.setItem('ng_memos', JSON.stringify(challengeMemos));
-    updateMetrics();
-  }
-  input.addEventListener("blur", save);
-  input.addEventListener("keydown", e=>{if(e.key==="Escape"){save();}});
-}
-
-function maskEmail(email){
-  if(!email) return "";
-  const at = email.indexOf("@");
-  if(at<=0) return email;
-  const local = email.substring(0, at);
-  const domain = email.substring(at);
-  if(local.length<=2) return local[0]+"****"+domain;
-  return local[0]+"****"+local[local.length-1]+domain;
-}
-function generateDiscord(){
-  const cn = ne("discord-challenge").value;
-  const type = ne("discord-type").value;
-  const missing = getMissing(cn==="all"?"all":parseInt(cn));
-  const label = cn==="all" ? "전체 챌린지" : `챌린지 No.${cn}`;
-  let msg = "";
-  if(type==="reminder"){
-    msg=`📣 **[${label} 마감 리마인더]**\n\n아직 콘텐츠를 제출하지 않은 분들께 알립니다!\n현재 **${missing.length}명**이 미제출 상태입니다.\n\n`;
-    if(missing.length>0){msg+="미제출자 목록:\n";missing.forEach(m=>{msg+=`• ${m.name} (@${m.handle||m.email})\n`;});}
-    msg+="\n⏰ 마감 전에 꼭 제출해 주세요!\n📎 제출 링크: [링크를 입력하세요]";
-  } else if(type==="missing"){
-    msg=`⚠️ **[${label} 미제출 안내]**\n\n아래 크리에이터분들은 아직 콘텐츠 URL을 제출하지 않으셨습니다.\n빠른 제출 부탁드립니다! 🙏\n\n`;
-    if(missing.length===0) msg+="✅ 모든 참가자가 제출 완료하였습니다!\n";
-    else missing.forEach(m=>{msg+=`• **${m.name}** — @${m.handle||""} (${m.email})\n`;});
-    msg+="\n📎 제출 폼: [링크를 입력하세요]";
-  } else {
-    const submitted = getSubmittedRows(cn==="all"?"all":parseInt(cn));
-    msg=`🎉 **[${label} 참여 현황]**\n\n총 **${submitted.length}명**이 콘텐츠를 제출했습니다!\n\n✅ 제출 완료: ${submitted.length}명\n❌ 미제출: ${missing.length}명\n\n참여해주신 모든 크리에이터분들께 진심으로 감사드립니다! 💖\n검토 완료 후 개별 연락드리겠습니다.`;
-  }
-  ne("discord-preview").textContent = msg;
-}
-
-function copyDiscord(){
-  navigator.clipboard.writeText(ne("discord-preview").textContent).then(()=>{
-    const btn=event.currentTarget;btn.textContent="✅ 복사됨!";
-    setTimeout(()=>{btn.textContent="📋 복사하기";},2000);
-  });
-}
-
-function copyMissingList(){
-  const rows = getMissing(selectedChallenge);
-  const text = rows.map(r=>`${r.name}\t${r.handle||""}\t${r.email}\t${r.country||""}`).join("\n");
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn=event.currentTarget;btn.textContent="✅ 복사됨!";
-    setTimeout(()=>{btn.textContent="📋 목록 복사";},2000);
-  });
-}
-
-function goDiscord(){showPage('discord');generateDiscord();}
-
-// ============================================================
-// CSV 데이터 추가
-// ============================================================
-
-
-
-
-
-
-// ============================================================
-// 베스트 콘텐츠
-// ============================================================
 let bestContents = JSON.parse(localStorage.getItem('ng_best')||'[]');
 
-function saveBest(){localStorage.setItem('ng_best',JSON.stringify(bestContents));}
+const ne = id => document.getElementById(id);
+const norm = e => (e||'').toLowerCase().trim();
 
-function toggleBestForm(){
-  const form = ne("best-form");
-  const btn = ne("best-form-toggle-btn");
-  if(!form) return;
-  const isOpen = form.style.display !== "none";
-  form.style.display = isOpen ? "none" : "block";
-  btn.textContent = isOpen ? "➕ 추가" : "✕ 닫기";
-  if(!isOpen) ne("best-name")&&ne("best-name").focus();
+function getChallengeNums() {
+  const fromData = [...new Set([...applicants,...submissions].map(s=>s.challenge))].filter(Boolean);
+  return [...new Set([...fromData,...customChallenges])].sort((a,b)=>a-b);
+}
+function getApplicants(cn) {
+  return cn==='all' ? applicants : applicants.filter(a=>a.challenge==cn);
+}
+function getSubmitted(cn) {
+  const src = cn==='all' ? submissions : submissions.filter(s=>s.challenge==cn);
+  const seen=new Set(), res=[];
+  src.forEach(s=>{ const k=norm(s.email)+'|'+s.challenge; if(!seen.has(k)){ seen.add(k); res.push(s); } });
+  return res;
+}
+function getMissing(cn) {
+  const apps = getApplicants(cn);
+  const subEmails = new Set((cn==='all'?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
+  return apps.filter(a=>!subEmails.has(norm(a.email)));
+}
+function maskEmail(email) {
+  if(!email) return '';
+  const at=email.indexOf('@'); if(at<=0) return email;
+  const local=email.substring(0,at), domain=email.substring(at);
+  return local[0]+'****'+(local.length>2?local[local.length-1]:'')+domain;
 }
 
-function addBestContent(){
-  const name = ne("best-name").value.trim();
-  const url = ne("best-url").value.trim();
-  const challenge = parseInt(ne("best-challenge").value);
-  const memo = ne("best-memo").value.trim();
-  if(!name||!url){alert("크리에이터 이름과 URL을 입력해주세요.");return;}
-  bestContents.unshift({id:Date.now(),name,url,challenge,memo});
+function showPage(name) {
+  ['overview','submitted','missing','discord'].forEach(p=>{
+    const pg=ne('page-'+p); if(pg) pg.classList.toggle('active',p===name);
+    const nav=ne('nav-'+p); if(nav) nav.classList.toggle('active',p===name);
+  });
+  if(name==='submitted') renderSubmitted();
+  if(name==='missing') renderMissing();
+  if(name==='discord') generateDiscord();
+  if(name==='overview') { renderBest(); renderToggles(); }
+}
+
+function renderToggles() {
+  const nums = getChallengeNums();
+  ['ov-toggles','sub-toggles','miss-toggles'].forEach(id=>{
+    const el=ne(id); if(!el) return;
+    el.innerHTML = '<button class="ch-btn '+(selectedChallenge==='all'?'active':'')+'" onclick="setChallenge(\'all\')">전체</button>'
+      + nums.map(n=>'<button class="ch-btn '+(selectedChallenge==n?'active':'')+'" onclick="setChallenge('+n+')">챌린지 '+n+'</button>').join('');
+  });
+  const ds=ne('discord-ch');
+  if(ds){
+    const cur=ds.value;
+    ds.innerHTML='<option value="all">전체 챌린지</option>'+nums.map(n=>'<option value="'+n+'">챌린지 '+n+'</option>').join('');
+    ds.value=cur;
+  }
+}
+
+function setChallenge(cn) {
+  selectedChallenge=cn; renderToggles(); updateMetrics(); renderSubmitted(); renderMissing(); generateDiscord();
+}
+
+function updateMetrics() {
+  const cn=selectedChallenge;
+  const apps=getApplicants(cn);
+  const subEmails=new Set((cn==='all'?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
+  const submitted=apps.filter(a=>subEmails.has(norm(a.email))).length;
+  const missing=apps.length-submitted;
+  const rate=apps.length?Math.round(submitted/apps.length*100):0;
+  ne('m-total').textContent=apps.length;
+  ne('m-submitted').textContent=submitted;
+  ne('m-missing').textContent=missing;
+  ne('m-rate').textContent=rate+'%';
+  ne('nav-sub-count').textContent=submitted;
+  ne('nav-miss-count').textContent=missing;
+  const nums=getChallengeNums();
+  ne('challenge-summary').innerHTML=nums.map(n=>{
+    const a2=applicants.filter(a=>a.challenge==n);
+    const se=new Set(submissions.filter(s=>s.challenge==n).map(s=>norm(s.email)));
+    const sc=a2.filter(a=>se.has(norm(a.email))).length;
+    const manual=applicantCounts[n];
+    const dc=manual!==undefined?manual:a2.length;
+    const mc=dc-sc;
+    const r=dc>0?Math.round(sc/dc*100):0;
+    const memo=challengeMemos[n]||'';
+    return '<tr>'
+      +'<td><span class="badge badge-blue">챌린지 '+n+'</span></td>'
+      +'<td><span onclick="editCount('+n+',this)" style="cursor:pointer;padding:2px 8px;border-radius:4px;background:#f0eeea;font-size:12px;font-family:DM Mono,monospace">'+dc+'</span></td>'
+      +'<td style="color:#2d8a4e;font-weight:500">'+sc+'</td>'
+      +'<td style="color:#ff6b9d;font-weight:500">'+mc+'</td>'
+      +'<td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:'+r+'%"></div></div><span class="prog-pct">'+r+'%</span></div></td>'
+      +'<td><div class="memo-cell" onclick="editMemo('+n+',this)">'+(memo?'<span class="memo-text">'+memo+'</span>':'<span class="memo-placeholder">+ 메모 추가</span>')+'</div></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function editCount(n, span) {
+  const cur=applicantCounts[n]!==undefined?applicantCounts[n]:span.textContent.trim();
+  const input=document.createElement('input');
+  input.type='number'; input.value=cur; input.min=0;
+  input.style.cssText='width:60px;font-size:12px;padding:2px 6px;border-radius:4px;border:1px solid #5865f2;background:#fff;font-family:DM Mono,monospace;text-align:center';
+  span.replaceWith(input); input.focus(); input.select();
+  function save(){ const v=parseInt(input.value); if(!isNaN(v)&&v>=0){ applicantCounts[n]=v; localStorage.setItem('ng_applicant_counts',JSON.stringify(applicantCounts)); } updateMetrics(); }
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key==='Escape') input.blur(); });
+}
+
+function editMemo(n, cell) {
+  const cur=challengeMemos[n]||'';
+  const input=document.createElement('textarea');
+  input.value=cur; input.style.cssText='width:100%;min-height:60px;font-size:12px;padding:6px;border-radius:6px;border:1px solid #5865f2;background:#fff;font-family:DM Sans,sans-serif;resize:vertical;outline:none';
+  cell.innerHTML=''; cell.appendChild(input); input.focus();
+  function save(){ challengeMemos[n]=input.value.trim(); localStorage.setItem('ng_memos',JSON.stringify(challengeMemos)); updateMetrics(); }
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{ if(e.key==='Escape') save(); });
+}
+
+function addChallenge() {
+  const nums=getChallengeNums();
+  const next=nums.length>0?Math.max(...nums)+1:1;
+  if(!customChallenges.includes(next)){ customChallenges.push(next); localStorage.setItem('ng_custom_challenges',JSON.stringify(customChallenges)); }
+  renderToggles(); updateMetrics();
+}
+function removeChallenge() {
+  const nums=getChallengeNums(); if(!nums.length) return;
+  const last=Math.max(...nums);
+  if([...applicants,...submissions].some(s=>s.challenge===last)){ alert('챌린지 '+last+'에 데이터가 있어서 삭제할 수 없어요.'); return; }
+  customChallenges=customChallenges.filter(c=>c!==last);
+  localStorage.setItem('ng_custom_challenges',JSON.stringify(customChallenges));
+  if(selectedChallenge==last) selectedChallenge='all';
+  renderToggles(); updateMetrics();
+}
+
+function renderSubmitted() {
+  const cn=selectedChallenge, q=norm(ne('search-sub').value);
+  let rows=getSubmitted(cn);
+  if(q) rows=rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
+  if(!rows.length){ ne('submitted-table').innerHTML='<tr><td colspan="7" class="empty">결과 없음</td></tr>'; return; }
+  ne('submitted-table').innerHTML=rows.map((r,i)=>{
+    const allUrls=submissions.filter(s=>norm(s.email)===norm(r.email)&&s.challenge===r.challenge).map(s=>s.url);
+    const url2=allUrls.length>1?allUrls[1]:null;
+    return '<tr>'
+      +'<td style="color:#9a9aac;font-size:11px">'+(i+1)+'</td>'
+      +'<td style="font-weight:500">'+(r.name||'-')+'</td>'
+      +'<td><span class="tag">@'+(r.handle||'-')+'</span></td>'
+      +'<td style="color:#5a5a72;font-size:12px">'+(r.email||'-')+'</td>'
+      +'<td><span class="badge badge-blue">챌린지 '+r.challenge+'</span></td>'
+      +'<td><a class="link" href="'+r.url+'" target="_blank">🔗 링크1</a></td>'
+      +'<td>'+(url2?'<a class="link" href="'+url2+'" target="_blank">🔗 링크2</a>':'-')+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function renderMissing() {
+  const cn=selectedChallenge, q=norm(ne('search-miss').value);
+  let rows=getMissing(cn);
+  if(q) rows=rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
+  if(!rows.length){ ne('missing-table').innerHTML='<tr><td colspan="6" class="empty">미제출자 없음 🎉</td></tr>'; return; }
+  ne('missing-table').innerHTML=rows.map((r,i)=>
+    '<tr>'
+    +'<td style="color:#9a9aac;font-size:11px">'+(i+1)+'</td>'
+    +'<td style="font-weight:500">'+(r.name||'-')+'</td>'
+    +'<td><span class="tag">@'+(r.handle||'-')+'</span></td>'
+    +'<td style="color:#5a5a72;font-size:12px">'+(r.email||'-')+'</td>'
+    +'<td style="font-size:12px;color:#9a9aac">'+(r.country||'-')+'</td>'
+    +'<td><span class="badge badge-red">챌린지 '+r.challenge+'</span></td>'
+    +'</tr>'
+  ).join('');
+}
+
+function copyMissing() {
+  const rows=getMissing(selectedChallenge);
+  const text=rows.map(r=>r.name+'\t@'+r.handle+'\t'+r.email+'\t'+(r.country||'')).join('\n');
+  navigator.clipboard.writeText(text).then(()=>{ const b=event.currentTarget; b.textContent='✅ 복사됨!'; setTimeout(()=>b.textContent='📋 목록 복사',2000); });
+}
+
+function generateDiscord() {
+  const cn=ne('discord-ch').value, type=ne('discord-type').value;
+  const missing=getMissing(cn==='all'?'all':parseInt(cn));
+  const label=cn==='all'?'전체 챌린지':'챌린지 No.'+cn;
+  let msg='';
+  if(type==='reminder'){
+    msg='📣 **['+label+' 마감 리마인더]**\n\n현재 **'+missing.length+'명**이 미제출 상태입니다.\n\n';
+    if(missing.length){ msg+='미제출자 목록:\n'; missing.forEach(m=>{ msg+='• '+m.name+' (@'+(m.handle||m.email)+')\n'; }); }
+    msg+='\n⏰ 제출 링크: [링크를 입력하세요]';
+  } else {
+    msg='⚠️ **['+label+' 미제출 안내]**\n\n빠른 제출 부탁드립니다! 🙏\n\n';
+    if(!missing.length) msg+='✅ 모든 참가자가 제출 완료하였습니다!\n';
+    else missing.forEach(m=>{ msg+='• **'+m.name+'** — @'+(m.handle||'')+' ('+maskEmail(m.email)+')\n'; });
+    msg+='\n📎 제출 폼: [링크를 입력하세요]';
+  }
+  ne('discord-preview').textContent=msg;
+}
+
+function copyDiscord() {
+  navigator.clipboard.writeText(ne('discord-preview').textContent).then(()=>{ const b=event.currentTarget; b.textContent='✅ 복사됨!'; setTimeout(()=>b.textContent='📋 복사하기',2000); });
+}
+
+function saveBest(){ localStorage.setItem('ng_best',JSON.stringify(bestContents)); }
+function toggleBestForm(){
+  const f=ne('best-form'), b=ne('best-form-btn');
+  const open=f.style.display!=='none';
+  f.style.display=open?'none':'block';
+  b.textContent=open?'➕ 추가':'✕ 닫기';
+  if(!open) ne('best-name').focus();
+}
+function addBest(){
+  const name=ne('best-name').value.trim(), url=ne('best-url').value.trim();
+  const challenge=parseInt(ne('best-challenge').value), memo=ne('best-memo').value.trim();
+  if(!name||!url){ alert('이름과 URL을 입력해주세요.'); return; }
+  bestContents.unshift({id:Date.now(),name,url,challenge,memo,quality:0,interaction:0});
   saveBest();
-  ne("best-name").value="";ne("best-url").value="";ne("best-memo").value="";
-  // 폼 닫기
-  const form = ne("best-form");
-  if(form) form.style.display="none";
-  const btn = ne("best-form-toggle-btn");
-  if(btn) btn.textContent="➕ 추가";
+  ne('best-name').value=''; ne('best-url').value=''; ne('best-memo').value='';
+  ne('best-form').style.display='none'; ne('best-form-btn').textContent='➕ 추가';
   renderBest();
 }
-
+function setRating(id,field,val){
+  const item=bestContents.find(b=>b.id===id); if(!item) return;
+  item[field]=item[field]===val?0:val; saveBest(); renderBest();
+}
+function updateBestMemo(id,val){ const item=bestContents.find(b=>b.id===id); if(item){ item.memo=val; saveBest(); } }
+function deleteBest(id){ bestContents=bestContents.filter(b=>b.id!==id); saveBest(); renderBest(); }
 function editBest(id){
-  const item = bestContents.find(b=>b.id===id);
-  if(!item) return;
-  const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center";
-
-  overlay.innerHTML = `
-    <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:24px;width:480px;max-width:90vw">
-      <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:16px">콘텐츠 수정</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">크리에이터 이름</label>
-          <input id="edit-name" type="text" value="${item.name}" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">챌린지</label>
-          <select id="edit-challenge" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)">
-            <option value="1" ${item.challenge==1?"selected":""}>챌린지 1</option>
-            <option value="2" ${item.challenge==2?"selected":""}>챌린지 2</option>
-            <option value="3" ${item.challenge==3?"selected":""}>챌린지 3</option>
-            <option value="4" ${item.challenge==4?"selected":""}>챌린지 4</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">콘텐츠 URL</label>
-        <input id="edit-url" type="text" value="${item.url}" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)">
-      </div>
-      <div style="margin-bottom:18px">
-        <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">메모</label>
-        <input id="edit-memo" type="text" value="${item.memo||""}" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)">
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button id="edit-cancel" class="btn" style="padding:7px 16px">취소</button>
-        <button id="edit-save" class="btn accent" style="padding:7px 16px">저장</button>
-      </div>
-    </div>`;
-
-  document.body.appendChild(overlay);
-  document.getElementById("edit-name").focus();
-
-  document.getElementById("edit-cancel").onclick = ()=>overlay.remove();
-  overlay.onclick = (e)=>{ if(e.target===overlay) overlay.remove(); };
-
-  document.getElementById("edit-save").onclick = ()=>{
-    item.name = document.getElementById("edit-name").value.trim()||item.name;
-    item.url = document.getElementById("edit-url").value.trim()||item.url;
-    item.challenge = parseInt(document.getElementById("edit-challenge").value);
-    item.memo = document.getElementById("edit-memo").value.trim();
-    saveBest();
-    renderBest();
-    overlay.remove();
+  const item=bestContents.find(b=>b.id===id); if(!item) return;
+  const o=document.createElement('div');
+  o.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
+  const makeOpt=(v,label)=>'<option value="'+v+'"'+(item.challenge==v?' selected':'')+'>'+label+'</option>';
+  o.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;width:460px;max-width:90vw">'
+    +'<div style="font-size:15px;font-weight:500;margin-bottom:16px">콘텐츠 수정</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'
+    +'<div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">이름</label><input id="e-name" value="'+item.name+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
+    +'<div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">챌린지</label><select id="e-ch" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit">'+[1,2,3,4,5,6].map(v=>makeOpt(v,'챌린지 '+v)).join('')+'</select></div>'
+    +'</div>'
+    +'<div style="margin-bottom:10px"><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">URL</label><input id="e-url" value="'+item.url+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
+    +'<div style="margin-bottom:18px"><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">메모</label><input id="e-memo" value="'+(item.memo||'')+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button id="e-cancel" style="padding:7px 16px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;cursor:pointer;font-family:inherit">취소</button>'
+    +'<button id="e-save" style="padding:7px 16px;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;font-weight:500;cursor:pointer;font-family:inherit">저장</button>'
+    +'</div></div>';
+  document.body.appendChild(o);
+  document.getElementById('e-cancel').onclick=()=>o.remove();
+  o.onclick=e=>{ if(e.target===o) o.remove(); };
+  document.getElementById('e-save').onclick=()=>{
+    item.name=document.getElementById('e-name').value.trim()||item.name;
+    item.url=document.getElementById('e-url').value.trim()||item.url;
+    item.challenge=parseInt(document.getElementById('e-ch').value);
+    item.memo=document.getElementById('e-memo').value.trim();
+    saveBest(); renderBest(); o.remove();
   };
 }
 
-function deleteBest(id){
-  bestContents = bestContents.filter(b=>b.id!==id);
-  saveBest();renderBest();
-}
-
-function setRating(id, field, val){
-  const item = bestContents.find(b=>b.id===id);
-  if(!item) return;
-  // 같은 별 클릭하면 취소
-  item[field] = item[field]===val ? 0 : val;
-  saveBest();
-  renderBest();
-}
-
-function updateBestMemo(id, val){
-  const item = bestContents.find(b=>b.id===id);
-  if(item){item.memo=val;saveBest();}
-}
-
-function getPlatform(url){
-  if(url.includes("tiktok.com")) return "tiktok";
-  if(url.includes("instagram.com")) return "instagram";
-  return "other";
-}
-
-function getTikTokEmbed(url){
-  // TikTok oEmbed URL
-  return `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`;
-}
-
 function renderBestFilterToggles(){
-  const nums = [...new Set(bestContents.map(b=>b.challenge))].sort((a,b)=>a-b);
-  const el = ne("best-filter-toggles");
-  if(!el) return;
-  const cur = el.dataset.selected||"all";
-  el.innerHTML = `<button class="ch-toggle all ${cur==="all"?"active":""}" onclick="setBestFilter('all')">전체</button>`
-    + nums.map(n=>`<button class="ch-toggle ${cur==n?"active":""}" onclick="setBestFilter(${n})">챌린지 ${n}</button>`).join("");
+  const el=ne('best-filter-toggles'); if(!el) return;
+  const nums=[...new Set(bestContents.map(b=>b.challenge))].sort((a,b)=>a-b);
+  const cur=el.dataset.selected||'all';
+  el.innerHTML='<button class="ch-btn '+(cur==='all'?'active':'')+'" onclick="setBestFilter(\'all\')">전체</button>'
+    +nums.map(n=>'<button class="ch-btn '+(cur==n?'active':'')+'" onclick="setBestFilter('+n+')">챌린지 '+n+'</button>').join('');
 }
-
-function setBestFilter(val){
-  const el = ne("best-filter-toggles");
-  if(el) el.dataset.selected = val;
-  renderBest();
-}
-
+function setBestFilter(val){ const el=ne('best-filter-toggles'); if(el) el.dataset.selected=val; renderBest(); }
 function renderBest(){
   renderBestFilterToggles();
-  const el = ne("best-filter-toggles");
-  const filterCh = el ? (el.dataset.selected||"all") : "all";
-  const q = (ne("best-search")?ne("best-search").value:"").toLowerCase();
-  let items = bestContents;
-  if(filterCh!=="all") items = items.filter(b=>b.challenge==filterCh);
-  if(q) items = items.filter(b=>b.name.toLowerCase().includes(q)||(b.memo||"").toLowerCase().includes(q));
-
-  const grid = ne("best-grid");
-  if(!grid) return;
-  if(items.length===0){
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text3);font-size:13px">아직 추가된 콘텐츠가 없어요.<br>위에서 링크를 추가해보세요!</div>`;
-    return;
-  }
-
-  function starHtml(id, field, val){
-    return [1,2,3,4,5].map(i=>`
-      <span onclick="setRating(${id},'${field}',${i})" style="cursor:pointer;font-size:16px;color:${i<=(val||0)?'#f5a623':'var(--border2)'}">★</span>
-    `).join("");
-  }
-
-  function getPlatformBadge(url){
-    if(url.includes("tiktok.com")) return `<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,0.06);color:var(--text2)">TikTok</span>`;
-    if(url.includes("instagram.com")) return `<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(214,41,118,0.1);color:#d62976">Instagram</span>`;
-    return `<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:var(--surface3);color:var(--text2)">Link</span>`;
-  }
-
-  grid.innerHTML = items.map(b=>`
-    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div style="min-width:0">
-          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px">${b.name}</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <span class="badge badge-blue" style="font-size:10px">챌린지 ${b.challenge}</span>
-            ${getPlatformBadge(b.url)}
-          </div>
-        </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
-          <a href="${b.url}" target="_blank" class="btn" style="font-size:11px;padding:5px 12px;text-decoration:none;background:#dbeafe;border-color:#93c5fd;color:#1d4ed8">🔗 열기</a>
-          <button onclick="editBest(${b.id})" class="btn" style="font-size:11px;padding:5px 10px">✏️</button>
-          <button onclick="deleteBest(${b.id})" class="btn" style="font-size:11px;padding:5px 10px;color:var(--pink)">✕</button>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="background:var(--surface2);border-radius:8px;padding:10px 12px">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">퀄리티</div>
-          <div style="display:flex;gap:1px">${starHtml(b.id,'quality',b.quality)}</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:10px 12px">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">인터랙션</div>
-          <div style="display:flex;gap:1px">${starHtml(b.id,'interaction',b.interaction)}</div>
-        </div>
-      </div>
-
-      <input type="text" value="${(b.memo||"").replace(/"/g,'&quot;')}" placeholder="메모 입력..."
-        onchange="updateBestMemo(${b.id},this.value)"
-        style="width:100%;font-size:12px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);outline:none">
-    </div>
-  `).join("");
+  const el=ne('best-filter-toggles');
+  const filterCh=el?(el.dataset.selected||'all'):'all';
+  const q=(ne('best-search')?ne('best-search').value:'').toLowerCase();
+  let items=bestContents;
+  if(filterCh!=='all') items=items.filter(b=>b.challenge==filterCh);
+  if(q) items=items.filter(b=>b.name.toLowerCase().includes(q)||(b.memo||'').toLowerCase().includes(q));
+  const grid=ne('best-grid'); if(!grid) return;
+  if(!items.length){ grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#9a9aac;font-size:13px">아직 추가된 콘텐츠가 없어요.</div>'; return; }
+  function stars(id,field,val){ return [1,2,3,4,5].map(i=>'<span class="star" onclick="setRating('+id+',\''+field+'\','+i+')" style="color:'+(i<=(val||0)?'#f5a623':'#e8e6e0')+'">★</span>').join(''); }
+  function pb(url){ if(url.includes('tiktok')) return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,0.06);color:#5a5a72">TikTok</span>'; if(url.includes('instagram')) return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(214,41,118,0.1);color:#d62976">Instagram</span>'; return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:#f0eeea;color:#5a5a72">Link</span>'; }
+  grid.innerHTML=items.map(b=>
+    '<div class="best-card">'
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
+    +'<div><div style="font-size:14px;font-weight:500;margin-bottom:5px">'+b.name+'</div>'
+    +'<div style="display:flex;gap:6px"><span class="badge badge-blue" style="font-size:10px">챌린지 '+b.challenge+'</span>'+pb(b.url)+'</div></div>'
+    +'<div style="display:flex;gap:4px;flex-shrink:0">'
+    +'<a href="'+b.url+'" target="_blank" class="btn accent" style="font-size:11px;padding:5px 10px;text-decoration:none">🔗</a>'
+    +'<button onclick="editBest('+b.id+')" class="btn" style="font-size:11px;padding:5px 10px">✏️</button>'
+    +'<button onclick="deleteBest('+b.id+')" class="btn" style="font-size:11px;padding:5px 10px;color:#ff6b9d">✕</button>'
+    +'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<div style="background:#f4f3ef;border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#9a9aac;text-transform:uppercase;margin-bottom:4px">퀄리티</div><div>'+stars(b.id,'quality',b.quality)+'</div></div>'
+    +'<div style="background:#f4f3ef;border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#9a9aac;text-transform:uppercase;margin-bottom:4px">인터랙션</div><div>'+stars(b.id,'interaction',b.interaction)+'</div></div>'
+    +'</div>'
+    +'<input type="text" value="'+(b.memo||'').replace(/"/g,"&quot;")+'" placeholder="메모 입력..." onchange="updateBestMemo('+b.id+',this.value)" style="width:100%;font-size:12px;padding:6px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.1);background:#f4f3ef;font-family:inherit;outline:none">'
+    +'</div>'
+  ).join('');
 }
 
-
-// ============================================================
-// 챌린지 번호 관리
-// ============================================================
-function addCustomChallenge(){
-  const nums = getChallengeNums();
-  const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
-  if(!customChallenges.includes(next)){
-    customChallenges.push(next);
-    localStorage.setItem('ng_custom_challenges', JSON.stringify(customChallenges));
+function parseCSVLine(line){
+  const result=[]; let cur='',inQuote=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQuote&&line[i+1]==='"'){ cur+='"'; i++; } else inQuote=!inQuote; }
+    else if(ch===','&&!inQuote){ result.push(cur); cur=''; }
+    else cur+=ch;
   }
-  renderToggles(); updateMetrics();
+  result.push(cur); return result;
 }
 
-function removeLastChallenge(){
-  const nums = getChallengeNums();
-  if(nums.length === 0) return;
-  const last = Math.max(...nums);
-  // 데이터가 있는 챌린지는 삭제 불가
-  const hasData = [...applicants,...submissions].some(s=>s.challenge===last);
-  if(hasData){ alert(`챌린지 ${last}에 데이터가 있어서 삭제할 수 없어요.`); return; }
-  customChallenges = customChallenges.filter(c=>c!==last);
-  localStorage.setItem('ng_custom_challenges', JSON.stringify(customChallenges));
-  if(selectedChallenge == last) selectedChallenge = "all";
-  renderToggles(); updateMetrics();
+async function syncFromSheet(){
+  const btn=ne('sync-btn'), status=ne('sync-status');
+  try{
+    btn.textContent='⏳ 동기화 중...'; btn.disabled=true; status.textContent='';
+    const res=await fetch(GSHEET_CSV_URL);
+    if(!res.ok) throw new Error('CSV 불러오기 실패 ('+res.status+')');
+    const text=await res.text();
+    const lines=text.trim().split('\n');
+    const delim=(lines[0]||'').includes('\t')?'\t':',';
+    const existingKeys=new Set(submissions.map(s=>norm(s.email)+'|'+s.challenge+'|'+(s.url||'')));
+    let added=0, skipped=0;
+    const newSubs=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=delim==='\t'?lines[i].split('\t'):parseCSVLine(lines[i]);
+      if(cols.length<9) continue;
+      const email=norm(cols[5]||''), name=(cols[4]||'').trim(), handle=(cols[2]||'').trim();
+      const url1=(cols[6]||'').trim(), url2=(cols[7]||'').trim();
+      const challenge=parseInt((cols[8]||'').replace(/[^0-9]/g,''));
+      if(!email||!url1||isNaN(challenge)||challenge<1) continue;
+      const k1=email+'|'+challenge+'|'+url1;
+      if(!existingKeys.has(k1)){ existingKeys.add(k1); newSubs.push({email,name,handle,url:url1,challenge}); added++; } else skipped++;
+      if(url2&&url2.startsWith('http')){ const k2=email+'|'+challenge+'|'+url2; if(!existingKeys.has(k2)){ existingKeys.add(k2); newSubs.push({email,name,handle,url:url2,challenge}); } }
+    }
+    if(newSubs.length){
+      submissions.push(...newSubs);
+      const prev=JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]');
+      localStorage.setItem('ng_extra_submissions',JSON.stringify([...prev,...newSubs]));
+    }
+    renderToggles(); updateMetrics(); renderSubmitted(); renderMissing(); generateDiscord(); renderBest();
+    const now=new Date().toLocaleTimeString('ko-KR');
+    status.innerHTML='<span style="color:#2d8a4e">✅ '+now+' — 신규 '+added+'건</span>'+(skipped?' <span style="color:#9a9aac">('+skipped+'건 중복)</span>':'');
+  } catch(e){
+    status.innerHTML='<span style="color:#ff6b9d">❌ '+e.message+'</span>';
+  } finally{
+    btn.textContent='🔄 시트 동기화'; btn.disabled=false;
+  }
 }
 
-// ============================================================
-// 페이지 전환
-// ============================================================
-function showPage(name){
-  // 모든 페이지 숨기기
-  ["overview","submitted","missing","discord"].forEach(p=>{
-    const el = ne("page-"+p);
-    if(el) el.style.display = p===name ? "block" : "none";
-  });
-  // nav 활성화
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(n=>{
-    const oc = n.getAttribute("onclick")||"";
-    if(oc.includes("'"+name+"'")) n.classList.add("active");
-  });
-  if(name==="submitted")renderSubmitted();
-  if(name==="missing")renderMissing();
-  if(name==="discord")generateDiscord();
-  if(name==="overview")renderBest();
-}
-
-// ============================================================
-// 초기화
-// ============================================================
 renderToggles();
 updateMetrics();
 generateDiscord();
 renderBest();
-// 초기 페이지 표시 설정
-["overview","submitted","missing","discord"].forEach(p=>{
-  const el = ne("page-"+p);
-  if(el) el.style.display = p==="overview" ? "block" : "none";
-});
 </script>
 </body>
 </html>
