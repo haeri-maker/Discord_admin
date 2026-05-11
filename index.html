@@ -195,7 +195,7 @@ code{background:var(--surface3);padding:1px 6px;border-radius:4px;font-family:'D
     <div class="search-wrap">
       <input type="text" id="search-sub" placeholder="이름, 이메일, 핸들 검색..." oninput="renderSubmitted()">
     </div>
-    <table><thead><tr><th>이름</th><th>핸들</th><th>이메일</th><th>챌린지</th><th>링크</th></tr></thead>
+    <table><thead><tr><th>이름</th><th>Discord ID</th><th>이메일</th><th>챌린지</th><th>링크 1</th><th>링크 2</th></tr></thead>
     <tbody id="submitted-table"></tbody></table>
   </div>
 </div>
@@ -851,14 +851,22 @@ function renderSubmitted(){
   let rows = getSubmittedRows(cn);
   if(q) rows = rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
   ne("submitted-table").innerHTML = rows.length===0
-    ? '<tr><td colspan="5" class="empty">결과 없음</td></tr>'
-    : rows.map(r=>`<tr>
+    ? '<tr><td colspan="6" class="empty">결과 없음</td></tr>'
+    : rows.map(r=>{
+        // 같은 이메일+챌린지의 URL2 찾기
+        const allUrls = submissions.filter(s=>
+          norm(s.email)===norm(r.email) && s.challenge===r.challenge
+        ).map(s=>s.url);
+        const url2 = allUrls.length > 1 ? allUrls[1] : null;
+        return `<tr>
         <td style="font-weight:500">${r.name||"-"}</td>
         <td><span class="tag">@${r.handle||"-"}</span></td>
         <td style="color:var(--text2);font-size:12px">${r.email||"-"}</td>
         <td><span class="badge badge-blue">챌린지 ${r.challenge}</span></td>
-        <td><a class="link" href="${r.url}" target="_blank">🔗 보기</a></td>
-      </tr>`).join("");
+        <td><a class="link" href="${r.url}" target="_blank">🔗 링크1</a></td>
+        <td>${url2 ? '<a class="link" href="'+url2+'" target="_blank">🔗 링크2</a>' : '-'}</td>
+      </tr>`;
+      }).join("");
 }
 
 // ============================================================
@@ -1209,17 +1217,21 @@ function removeLastChallenge(){
 // 페이지 전환
 // ============================================================
 function showPage(name){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  // 모든 페이지 숨기기
+  ["overview","submitted","missing","discord"].forEach(p=>{
+    const el = ne("page-"+p);
+    if(el) el.style.display = p===name ? "block" : "none";
+  });
+  // nav 활성화
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  const pg = ne("page-"+name);
-  if(pg) pg.classList.add("active");
-  // onclick 속성으로 해당 nav-item 찾아서 active
   document.querySelectorAll(".nav-item").forEach(n=>{
-    if(n.getAttribute("onclick") === "showPage('"+name+"')") n.classList.add("active");
+    const oc = n.getAttribute("onclick")||"";
+    if(oc.includes("'"+name+"'")) n.classList.add("active");
   });
   if(name==="submitted")renderSubmitted();
   if(name==="missing")renderMissing();
   if(name==="discord")generateDiscord();
+  if(name==="overview")renderBest();
 }
 
 // ============================================================
@@ -1229,6 +1241,11 @@ renderToggles();
 updateMetrics();
 generateDiscord();
 renderBest();
+// 초기 페이지 표시 설정
+["overview","submitted","missing","discord"].forEach(p=>{
+  const el = ne("page-"+p);
+  if(el) el.style.display = p==="overview" ? "block" : "none";
+});
 </script>
 </body>
 </html>
