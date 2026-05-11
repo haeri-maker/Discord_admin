@@ -656,6 +656,10 @@ async function syncFromSheet(){
     const text = await res.text();
     const lines = text.trim().split("\n");
 
+    // 구분자 자동 감지 (탭 or 쉼표)
+    const firstLine = lines[0] || "";
+    const delimiter = firstLine.includes("\t") ? "\t" : ",";
+
     // A=타임스탬프, B=UserID, C=Username, D=Discord닉, E=FullName, F=Email, G=URL1, H=URL2, I=챌린지No
     const existingKeys = new Set(
       submissions.map(s => (s.email||"").toLowerCase() + "|" + s.challenge + "|" + (s.url||""))
@@ -665,7 +669,7 @@ async function syncFromSheet(){
     const newSubs = [];
 
     for(let i = 1; i < lines.length; i++){
-      const cols = parseCSVLine(lines[i]);
+      const cols = delimiter === "\t" ? lines[i].split("\t") : parseCSVLine(lines[i]);
       if(cols.length < 9) continue;
       const email     = (cols[5]||"").trim().toLowerCase();
       const name      = (cols[4]||"").trim();
@@ -831,7 +835,7 @@ function updateMetrics(){
       <td style="color:var(--pink);font-weight:500">${missCount}</td>
       <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${rateVal}%"></div></div><span class="prog-pct">${rateVal}%</span></div></td>
       <td><div class="memo-cell" onclick="editMemo(${n}, this)">
-        ${memo ? `<span class="memo-text">${memo}</span>` : `<span class="memo-placeholder">+ 메모 추가</span>`}
+        ${memo ? '<span class="memo-text">'+memo+'</span>' : '<span class="memo-placeholder">+ 메모 추가</span>'}
       </div></td>
     </tr>`;
   }).join("");
