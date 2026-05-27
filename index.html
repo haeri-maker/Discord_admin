@@ -607,7 +607,7 @@ function updateMetrics() {
   const apps=getApplicants(cn);
   const subEmails=new Set((cn==='all'?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
   const submitted=apps.filter(a=>subEmails.has(norm(a.email))).length;
-  const missing=apps.length-submitted;
+  const missing=Math.max(0, apps.length-submitted);
   const rate=apps.length?Math.round(submitted/apps.length*100):0;
   ne('m-total').textContent=apps.length;
   ne('m-submitted').textContent=submitted;
@@ -619,9 +619,12 @@ function updateMetrics() {
   ne('challenge-summary').innerHTML=nums.map(n=>{
     const a2=applicants.filter(a=>a.challenge==n);
     const se=new Set(submissions.filter(s=>s.challenge==n).map(s=>norm(s.email)));
-    const sc=a2.filter(a=>se.has(norm(a.email))).length;
+    // 신청자 있으면 매칭, 없으면 submission 고유 이메일 수로 대체
+    const sc = a2.length > 0
+      ? a2.filter(a=>se.has(norm(a.email))).length
+      : se.size;
     const manual=applicantCounts[n];
-    const dc=manual!==undefined?manual:a2.length;
+    const dc=manual!==undefined?manual:(a2.length>0?a2.length:se.size);
     const mc=dc-sc;
     const r=dc>0?Math.round(sc/dc*100):0;
     const memo=challengeMemos[n]||'';
