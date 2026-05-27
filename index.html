@@ -39,7 +39,6 @@ a{text-decoration:none;}
 .ni-green{background:rgba(48,209,88,0.15);}
 .ni-purple{background:rgba(191,90,242,0.15);}
 .ni-orange{background:rgba(255,159,10,0.15);}
-.nav-badge{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:99px;background:var(--bg4);color:var(--text3);font-family:var(--mono);}
 
 /* PAGE HEADER */
 .ph{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
@@ -87,11 +86,11 @@ a{text-decoration:none;}
 .ci-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;}
 .ci-title{font-size:15px;font-weight:600;letter-spacing:-0.3px;}
 .ci-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
-.ci-desc{font-size:12px;color:var(--text2);padding:9px 12px;background:var(--bg);border-radius:8px;line-height:1.6;margin-bottom:8px;}
-.ci-desc-lbl{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
+.ci-desc{font-size:12px;color:var(--text);padding:9px 12px;background:var(--bg);border-radius:8px;line-height:1.6;margin-bottom:8px;}
+.ci-desc-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;padding:12px;background:var(--bg);border-radius:9px;border:0.5px solid var(--border);}
 .stat-box{text-align:center;}
-.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;}
+.sl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;}
 .sv{font-size:19px;font-weight:600;font-family:var(--mono);}
 .url-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg);border-radius:8px;margin-top:8px;border:0.5px solid var(--border);}
 .url-lbl{font-size:10px;color:var(--text3);flex-shrink:0;font-weight:600;text-transform:uppercase;}
@@ -184,19 +183,15 @@ hr.div{border:none;border-top:0.5px solid var(--border);margin:14px 0;}
   <div class="nav-sec">Channels</div>
   <div class="nav-item" id="nav-discord" onclick="showPage('discord')">
     <div class="nav-icon ni-blue">🎮</div>Discord
-    <span class="nav-badge" id="nb-discord">0</span>
   </div>
   <div class="nav-item" id="nav-nurilounge" onclick="showPage('nurilounge')">
     <div class="nav-icon ni-green">🍵</div>Nurilounge Campaign
-    <span class="nav-badge" id="nb-nurilounge">0</span>
   </div>
   <div class="nav-item" id="nav-roster" onclick="showPage('roster')">
     <div class="nav-icon ni-purple">📋</div>Nurilounge Roster
-    <span class="nav-badge" id="nb-roster">0</span>
   </div>
   <div class="nav-item" id="nav-ugc" onclick="showPage('ugc')">
     <div class="nav-icon ni-orange">🎬</div>UGC
-    <span class="nav-badge" id="nb-ugc">0</span>
   </div>
 </nav>
 
@@ -432,14 +427,17 @@ async function loadData() {
     if(Array.isArray(rows)) rows.forEach(r=>{ if(data[r.channel]!==undefined) data[r.channel]=r.data||[]; });
   } catch(e) {
     console.warn('Supabase load failed, using localStorage:', e);
+    showToast('⚠️ 오프라인 — 로컬 데이터 사용', true);
     const loc = JSON.parse(localStorage.getItem('ca_v3')||'null');
     if(loc) data = loc;
   } finally { lbar(false); }
 }
 
 async function saveData() {
+  // 1. 즉시 localStorage 백업
   localStorage.setItem('ca_v3', JSON.stringify(data));
   lbar(true);
+  let saved = false;
   try {
     for(const ch of CHS) {
       const chk = await fetch(SUPA_URL+'/rest/v1/campaigns?channel=eq.'+ch+'&select=id', {
@@ -450,14 +448,37 @@ async function saveData() {
       const url = method==='PATCH'
         ? SUPA_URL+'/rest/v1/campaigns?channel=eq.'+ch
         : SUPA_URL+'/rest/v1/campaigns';
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
         body:JSON.stringify(method==='PATCH'?{data:data[ch],updated_at:new Date().toISOString()}:{channel:ch,data:data[ch]})
       });
+      if(!res.ok) throw new Error('Save failed: '+ch+' '+res.status);
     }
-  } catch(e){ console.warn('Supabase save failed:', e); }
+    saved = true;
+    showToast('✅ 저장됨');
+  } catch(e){
+    console.warn('Supabase save failed:', e);
+    showToast('⚠️ 연결 실패 — 로컬 저장됨', true);
+  }
   finally { lbar(false); }
+  return saved;
+}
+
+function showToast(msg, warn=false) {
+  let t = document.getElementById('toast');
+  if(!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity 0.4s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.style.background = warn ? 'rgba(255,159,10,0.95)' : 'rgba(48,209,88,0.95)';
+  t.style.color = '#fff';
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.style.opacity='0', 2500);
 }
 
 // --- UTILS ---
@@ -498,7 +519,6 @@ function setBranch(b,btn){
 
 // --- DASHBOARD ---
 function renderDash(){
-  updateBadges();
   const cm = curMonth();
   const g = document.getElementById('ch-grid');
   g.innerHTML = CHS.map(ch=>{
@@ -524,13 +544,7 @@ function renderDash(){
   }).join('');
 }
 
-function updateBadges(){
-  const cm = curMonth();
-  CHS.forEach(ch=>{
-    const el = document.getElementById('nb-'+ch);
-    if(el) el.textContent = (data[ch]||[]).filter(c=>campMonth(c)===cm).length;
-  });
-}
+function updateBadges(){}
 
 // --- OV CALENDAR ---
 function ocPrev(){ ocM--; if(ocM<0){ocM=11;ocY--;} renderOvCal(); }
@@ -673,7 +687,7 @@ function renderList(ch){
         ${stats}
         ${isR&&c.reportUrl?`<div class="url-box"><span class="url-lbl">Report</span><span class="url-txt">${c.reportUrl}</span><a href="${c.reportUrl}" target="_blank" class="btn green" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="event.stopPropagation()">열기 →</a></div>`:''}
         ${isU&&c.folderUrl?`<div class="url-box"><span class="url-lbl">폴더</span><span class="url-txt">${c.folderUrl}</span><a href="${c.folderUrl}" target="_blank" class="btn green" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="event.stopPropagation()">열기 →</a></div>`:''}
-        ${c.memo?`<div style="font-size:12px;color:var(--text3);margin-top:8px;font-style:italic">💬 ${c.memo}</div>`:''}
+        ${c.memo?`<div style="font-size:12px;color:var(--text2);margin-top:8px">💬 ${c.memo}</div>`:''}
       </div>`;
     }).join('');
     return `<div style="margin-bottom:26px">
@@ -742,11 +756,13 @@ function openModal(ch,idx=null){
   document.getElementById('modal-ttl').textContent = idx!==null?'캠페인 수정':CH_INFO[ch].name+' — 캠페인 추가';
   document.getElementById('modal-body').innerHTML = getFields(ch,c);
   document.getElementById('overlay').classList.add('open');
-  // 날짜 피커 초기화
-  setTimeout(()=>{
-    initDatePicker('f-start', c.start||'', v=>{ dpState['f-start'].value=v; });
-    initDatePicker('f-end', c.end||'', v=>{ dpState['f-end'].value=v; });
-  }, 10);
+  // 날짜 피커 초기화 - DOM 렌더 후
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      initDatePicker('f-start', c.start||'', v=>{ dpState['f-start'].value=v; });
+      initDatePicker('f-end', c.end||'', v=>{ dpState['f-end'].value=v; });
+    });
+  });
 }
 
 function closeModal(){
@@ -754,7 +770,7 @@ function closeModal(){
   editCh=null; editIdx=null;
 }
 
-function saveCampaign(){
+async function saveCampaign(){
   const ch=editCh;
   const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
   const gn=id=>{const el=document.getElementById(id);return el?(parseInt(el.value)||0):0;};
@@ -765,13 +781,12 @@ function saveCampaign(){
   saveData();
   closeModal();
   renderList(ch);
-  updateBadges();
 }
 
 function delCamp(ch,idx){
   if(!confirm('삭제할까요?')) return;
   data[ch].splice(idx,1);
-  saveData(); renderList(ch); updateBadges(); renderDash();
+  saveData(); renderList(ch); renderDash();
 }
 
 document.getElementById('overlay').addEventListener('click',e=>{
