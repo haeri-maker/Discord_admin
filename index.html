@@ -484,12 +484,32 @@ function showToast(msg, warn=false) {
 // --- UTILS ---
 function curMonth(){ const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'); }
 function campMonth(c){
-  // 종료일 기준 (수급은 마지막에 완료되므로)
+  // 시작일 기준 월 반환 (그룹화/아카이브용)
+  const ref = c.start;
+  if(!ref) return null;
+  const d = new Date(ref.length===7?ref+'-01':ref);
+  if(isNaN(d)) return null;
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function campEndMonth(c){
+  // 종료일 기준 — 수급 콘텐츠 집계용
   const ref = c.end || c.start;
   if(!ref) return null;
   const d = new Date(ref.length===7?ref+'-28':ref);
   if(isNaN(d)) return null;
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function campActiveInMonth(c, ym){
+  // 해당 월(YYYY-MM)이 캠페인 기간 안에 포함되는지
+  if(!c.start) return false;
+  const [y,m] = ym.split('-').map(Number);
+  const monthStart = new Date(y, m-1, 1);
+  const monthEnd = new Date(y, m, 0, 23, 59, 59);
+  const s = new Date(c.start.length===7?c.start+'-01':c.start);
+  const e = c.end ? new Date(c.end.length===7?c.end+'-28':c.end) : s;
+  return s <= monthEnd && e >= monthStart;
 }
 function monthLabel(m){
   if(!m||m==='날짜 없음') return '날짜 없음';
@@ -525,8 +545,10 @@ function renderDash(){
   const g = document.getElementById('ch-grid');
   g.innerHTML = CHS.map(ch=>{
     const info = CH_INFO[ch];
-    const camps = (data[ch]||[]).filter(c=>campMonth(c)===cm&&(branch==='all'||c.branch===branch));
-    const content = camps.reduce((s,c)=>s+(ch==='discord'?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
+    const camps = (data[ch]||[]).filter(c=>campActiveInMonth(c,cm)&&(branch==='all'||c.branch===branch));
+    // 수급 콘텐츠는 종료일이 이번달인 캠페인 기준
+    const contentCamps = (data[ch]||[]).filter(c=>campEndMonth(c)===cm&&(branch==='all'||c.branch===branch));
+    const content = contentCamps.reduce((s,c)=>s+(ch==='discord'?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
     const urlBtns = [];
     camps.forEach(c=>{
       if((ch==='nurilounge'||ch==='roster')&&c.reportUrl) urlBtns.push({label:'Report',url:c.reportUrl,name:c.name});
