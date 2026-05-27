@@ -3,889 +3,692 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nuriglow Discord Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Content Admin</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#f4f3ef;color:#1a1a2e;min-height:100vh;font-size:14px}
-.layout{display:flex;min-height:100vh}
-.sidebar{width:220px;background:#fff;border-right:0.5px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;padding:24px 0;position:fixed;top:0;left:0;bottom:0;z-index:10;overflow-y:auto}
-.logo-area{padding:0 20px 20px;border-bottom:0.5px solid rgba(0,0,0,0.08);margin-bottom:8px}
-.logo-mark{width:44px;height:44px;border-radius:10px;overflow:hidden;margin-bottom:10px}
-.logo-mark img{width:100%;height:100%;object-fit:cover}
-.logo-name{font-size:13px;font-weight:600;color:#1a1a2e}
-.logo-sub{font-size:11px;color:#9a9aac;margin-top:2px}
-.sync-area{padding:0 14px 14px;border-bottom:0.5px solid rgba(0,0,0,0.08);margin-bottom:8px}
-.sync-btn{width:100%;font-size:12px;font-weight:500;padding:8px 0;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;cursor:pointer;font-family:inherit}
-.sync-btn:hover{background:#bfdbfe}
-.sync-btn:disabled{opacity:0.6;cursor:not-allowed}
-.sync-status{margin-top:5px;text-align:center;font-size:11px;min-height:16px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:#5a5a72;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;user-select:none}
-.nav-item:hover{color:#1a1a2e;background:#f0eeea}
-.nav-item.active{color:#5865f2;border-left-color:#5865f2;background:rgba(88,101,242,0.06)}
-.nav-icon{font-size:14px;width:18px;text-align:center;display:flex;align-items:center}
-.nav-badge{margin-left:auto;background:#e8e6e0;color:#5a5a72;font-size:10px;padding:1px 7px;border-radius:99px;font-family:'DM Mono',monospace}
-.nav-badge.danger{background:rgba(255,107,157,0.15);color:#ff6b9d}
-.main{margin-left:220px;flex:1;padding:32px;min-height:100vh}
-.page{display:none}
-.page.active{display:block}
-.page-header{margin-bottom:24px}
-.page-title{font-size:22px;font-weight:600}
-.page-sub{font-size:13px;color:#9a9aac;margin-top:4px}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.metric{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px 20px}
-.metric-label{font-size:11px;color:#9a9aac;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
-.metric-value{font-size:28px;font-weight:600;font-family:'DM Mono',monospace}
-.metric-value.green{color:#2d8a4e}
-.metric-value.red{color:#ff6b9d}
-.card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:20px 22px;margin-bottom:16px}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.card-title{font-size:13px;font-weight:500}
-.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:10px;font-weight:500;color:#9a9aac;text-transform:uppercase;letter-spacing:0.6px;padding:0 12px 10px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
-td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.08);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f4f3ef}
-.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500}
-.badge-blue{background:rgba(88,101,242,0.1);color:#5865f2}
-.badge-red{background:rgba(255,107,157,0.12);color:#ff6b9d}
-.badge-green{background:rgba(45,138,78,0.1);color:#2d8a4e}
-select,input[type=text]{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;border-radius:10px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#1a1a2e;outline:none}
-select:focus,input[type=text]:focus{border-color:#5865f2}
-.search-wrap{margin-bottom:14px}
-.search-wrap input{width:100%}
-.btn{font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:10px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#5a5a72;cursor:pointer;transition:all 0.15s}
-.btn:hover{background:#f0eeea;color:#1a1a2e}
-.btn.accent{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;font-weight:500}
-.btn.accent:hover{background:#bfdbfe}
-.link{color:#5865f2;text-decoration:none;font-size:12px}
-.link:hover{text-decoration:underline}
-.tag{font-size:11px;padding:2px 7px;background:#f0eeea;border-radius:4px;color:#5a5a72;font-family:'DM Mono',monospace}
-.prog-wrap{display:flex;align-items:center;gap:8px}
-.prog-bar{flex:1;height:5px;background:#e8e6e0;border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;background:#5865f2;border-radius:99px}
-.prog-pct{font-size:11px;color:#5a5a72;font-family:'DM Mono',monospace;min-width:34px}
-.empty{text-align:center;padding:2rem;color:#9a9aac;font-size:13px}
-.ch-toggles{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.ch-btn{padding:5px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid rgba(0,0,0,0.14);background:#fff;color:#5a5a72;transition:all 0.15s;font-family:inherit}
-.ch-btn:hover{color:#1a1a2e;border-color:#9a9aac}
-.ch-btn.active{background:rgba(88,101,242,0.1);color:#5865f2;border-color:#5865f2}
-.memo-cell{cursor:pointer;min-width:140px}
-.memo-text{font-size:12px;color:#5a5a72;line-height:1.5;white-space:pre-wrap}
-.memo-placeholder{font-size:12px;color:#9a9aac}
-.memo-cell:hover .memo-placeholder{color:#5865f2}
-.best-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.best-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
-.star{cursor:pointer;font-size:16px;line-height:1}
-.discord-box{background:#f0eeea;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px;font-family:'DM Mono',monospace;font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:280px;overflow-y:auto}
+:root {
+  --bg: #1c1c1e;
+  --bg2: #2c2c2e;
+  --bg3: #3a3a3c;
+  --bg4: #48484a;
+  --surface: #2c2c2e;
+  --surface2: #3a3a3c;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f5f5f7;
+  --text2: #aeaeb2;
+  --text3: #6c6c70;
+  --accent: #0a84ff;
+  --accent2: #30d158;
+  --accent3: #ff9f0a;
+  --accent4: #ff453a;
+  --accent5: #bf5af2;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --font: "Geist", -apple-system, sans-serif;
+  --font-mono: "Geist Mono", monospace;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; font-size:14px; -webkit-font-smoothing:antialiased; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--bg4); border-radius:4px; }
+
+.layout { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width:220px; background:rgba(28,28,30,0.95); backdrop-filter:blur(20px);
+  border-right:0.5px solid var(--border); display:flex; flex-direction:column;
+  padding:20px 0; position:fixed; top:0; left:0; bottom:0; z-index:10; overflow-y:auto;
+}
+.logo-area { padding:0 16px 20px; border-bottom:0.5px solid var(--border); margin-bottom:6px; }
+.logo-name { font-size:14px; font-weight:600; color:var(--text); letter-spacing:-0.3px; }
+.logo-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+
+.nav-section { padding:12px 16px 4px; font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
+.nav-item {
+  display:flex; align-items:center; gap:9px; padding:8px 16px; font-size:13px;
+  color:var(--text2); cursor:pointer; border-radius:8px; margin:1px 8px;
+  transition:all 0.15s; user-select:none; position:relative;
+}
+.nav-item:hover { color:var(--text); background:var(--bg3); }
+.nav-item.active { color:var(--text); background:var(--bg3); font-weight:500; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:16px; background:var(--accent); border-radius:0 2px 2px 0; margin-left:-8px; }
+.nav-icon { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.nav-icon.blue { background:rgba(10,132,255,0.15); }
+.nav-icon.green { background:rgba(48,209,88,0.15); }
+.nav-icon.purple { background:rgba(191,90,242,0.15); }
+.nav-icon.orange { background:rgba(255,159,10,0.15); }
+.nav-icon.teal { background:rgba(90,200,250,0.15); }
+.nav-badge { margin-left:auto; font-size:10px; padding:1px 7px; border-radius:99px; background:var(--bg4); color:var(--text3); font-family:var(--font-mono); }
+
+/* MAIN */
+.main { margin-left:220px; flex:1; padding:28px 32px; min-height:100vh; }
+.page { display:none; }
+.page.active { display:block; }
+.page-header { margin-bottom:24px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.page-title { font-size:24px; font-weight:600; letter-spacing:-0.5px; }
+.page-sub { font-size:13px; color:var(--text3); margin-top:3px; }
+
+/* BRANCH FILTER */
+.branch-filter { display:flex; gap:6px; background:var(--bg2); padding:3px; border-radius:10px; border:0.5px solid var(--border); }
+.branch-btn { padding:5px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; border:none; background:transparent; color:var(--text3); transition:all 0.15s; font-family:var(--font); }
+.branch-btn.active { background:var(--bg4); color:var(--text); }
+
+/* CARDS */
+.card { background:var(--surface); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:14px; }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-title { font-size:13px; font-weight:600; color:var(--text); }
+
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
+
+/* CHANNEL CARD */
+.channel-card {
+  background:var(--surface); border:0.5px solid var(--border); border-radius:var(--radius-lg);
+  padding:20px; cursor:pointer; transition:all 0.2s;
+}
+.channel-card:hover { border-color:var(--accent); background:var(--bg3); transform:translateY(-1px); box-shadow:0 8px 32px rgba(0,0,0,0.3); }
+.ch-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:12px; }
+.ch-name { font-size:14px; font-weight:600; margin-bottom:6px; }
+.ch-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; padding-top:14px; border-top:0.5px solid var(--border); }
+.ch-stat-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+.ch-stat-value { font-size:18px; font-weight:600; font-family:var(--font-mono); }
+
+/* STAT BOXES */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0; padding:14px; background:var(--bg); border-radius:10px; border:0.5px solid var(--border); }
+.stat-box { text-align:center; }
+.stat-label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; font-weight:500; }
+.stat-value { font-size:20px; font-weight:600; font-family:var(--font-mono); }
+
+/* CAMPAIGN ITEM */
+.campaign-item { background:var(--surface); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:12px; transition:border-color 0.15s; }
+.campaign-item:hover { border-color:var(--border2); }
+.ci-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; gap:12px; }
+.ci-title { font-size:15px; font-weight:600; letter-spacing:-0.3px; }
+.ci-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+.ci-desc { font-size:12px; color:var(--text2); padding:10px 14px; background:var(--bg); border-radius:9px; line-height:1.6; margin-bottom:8px; }
+.ci-desc-label { font-size:10px; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+
+/* BADGES */
+.badge { display:inline-flex; align-items:center; padding:3px 9px; border-radius:99px; font-size:11px; font-weight:500; }
+.badge-blue { background:rgba(10,132,255,0.15); color:#4cb8ff; }
+.badge-green { background:rgba(48,209,88,0.15); color:#30d158; }
+.badge-orange { background:rgba(255,159,10,0.15); color:#ff9f0a; }
+.badge-purple { background:rgba(191,90,242,0.15); color:#bf5af2; }
+.badge-gray { background:var(--bg3); color:var(--text2); }
+
+/* BTNS */
+.btn { font-family:var(--font); font-size:12px; padding:7px 14px; border-radius:9px; border:0.5px solid var(--border2); background:var(--bg3); color:var(--text2); cursor:pointer; transition:all 0.15s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+.btn:hover { background:var(--bg4); color:var(--text); }
+.btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:500; }
+.btn.primary:hover { background:#0071e3; }
+.btn.green { background:rgba(48,209,88,0.15); color:var(--accent2); border-color:rgba(48,209,88,0.2); font-weight:500; }
+.btn.green:hover { background:rgba(48,209,88,0.25); }
+.btn.danger { color:var(--accent4); border-color:rgba(255,69,58,0.2); }
+.btn.danger:hover { background:rgba(255,69,58,0.1); }
+
+/* URL BOX */
+.url-box { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--bg); border-radius:9px; margin-top:10px; border:0.5px solid var(--border); }
+.url-label { font-size:10px; color:var(--text3); flex-shrink:0; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.url-text { font-size:11px; color:var(--text3); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--font-mono); }
+
+/* INPUTS */
+input,textarea,select { font-family:var(--font); font-size:13px; padding:9px 12px; border-radius:9px; border:0.5px solid var(--border2); background:var(--bg3); color:var(--text); outline:none; width:100%; transition:border 0.15s; }
+input:focus,textarea:focus,select:focus { border-color:var(--accent); }
+input::placeholder,textarea::placeholder { color:var(--text3); }
+textarea { resize:vertical; min-height:64px; line-height:1.5; }
+select option { background:var(--bg3); }
+label { font-size:11px; color:var(--text3); display:block; margin-bottom:5px; font-weight:500; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-group { margin-bottom:12px; }
+hr.divider { border:none; border-top:0.5px solid var(--border); margin:16px 0; }
+
+/* CALENDAR */
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.cal-title { font-size:16px; font-weight:600; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--border); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; }
+.cal-dow { background:var(--bg2); padding:8px 0; text-align:center; font-size:11px; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.cal-day { background:var(--surface); min-height:90px; padding:8px; position:relative; transition:background 0.15s; }
+.cal-day:hover { background:var(--bg3); }
+.cal-day.other-month .cal-day-num { color:var(--text3); }
+.cal-day.today .cal-day-num { background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.cal-day-num { font-size:12px; font-weight:500; margin-bottom:4px; width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+.cal-event { font-size:10px; padding:2px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:500; cursor:pointer; }
+.cal-event.discord { background:rgba(10,132,255,0.25); color:#4cb8ff; }
+.cal-event.nurilounge { background:rgba(48,209,88,0.2); color:#30d158; }
+.cal-event.roster { background:rgba(191,90,242,0.2); color:#bf5af2; }
+.cal-event.ugc { background:rgba(255,159,10,0.2); color:#ff9f0a; }
+
+/* MODAL */
+#modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; overflow-y:auto; padding:20px; backdrop-filter:blur(4px); }
+.modal-box { background:var(--surface); border:0.5px solid var(--border2); border-radius:20px; padding:24px; width:100%; max-width:540px; margin:auto; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-title { font-size:16px; font-weight:600; }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:0.5px solid var(--border); }
+
+/* EMPTY */
+.empty-state { text-align:center; padding:60px 20px; color:var(--text3); }
+.empty-icon { font-size:40px; margin-bottom:12px; opacity:0.4; }
+
+/* LEGEND */
+.legend { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); }
+.legend-dot { width:10px; height:10px; border-radius:3px; }
 </style>
 </head>
 <body>
 <div class="layout">
 <nav class="sidebar">
   <div class="logo-area">
-    <div class="logo-mark"><img src="data:image/png;base64,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" alt="Nuriglow"></div>
-    <div class="logo-name">Nuriglow Discord</div>
-    <div class="logo-sub">Challenge Admin</div>
+    <div class="logo-name">Content Admin</div>
+    <div class="logo-sub">Campaign Dashboard</div>
   </div>
-  <div class="sync-area">
-    <button class="sync-btn" id="sync-btn" onclick="syncFromSheet()">🔄 시트 동기화</button>
-    <div class="sync-status" id="sync-status"></div>
-  </div>
+  <div class="nav-section">Overview</div>
   <div class="nav-item active" id="nav-overview" onclick="showPage('overview')">
-    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span>
-    Overview
+    <div class="nav-icon blue" style="font-size:15px">📊</div>
+    Dashboard
   </div>
-  <div class="nav-item" id="nav-submitted" onclick="showPage('submitted')">
-    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-    제출 완료 <span class="nav-badge" id="nav-sub-count">0</span>
-  </div>
-  <div class="nav-item" id="nav-missing" onclick="showPage('missing')">
-    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="currentColor"/></svg></span>
-    미제출자 <span class="nav-badge danger" id="nav-miss-count">0</span>
-  </div>
+
+  <div class="nav-section">Channels</div>
   <div class="nav-item" id="nav-discord" onclick="showPage('discord')">
-    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 5.5h2l5-3v11l-5-3H2V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 6a2 2 0 010 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-    디스코드 공지
+    <div class="nav-icon blue" style="font-size:15px">🎮</div>
+    Discord
+    <span class="nav-badge" id="nb-discord">0</span>
+  </div>
+  <div class="nav-item" id="nav-nurilounge" onclick="showPage('nurilounge')">
+    <div class="nav-icon green" style="font-size:15px">🍵</div>
+    Nurilounge Campaign
+    <span class="nav-badge" id="nb-nurilounge">0</span>
+  </div>
+  <div class="nav-item" id="nav-roster" onclick="showPage('roster')">
+    <div class="nav-icon purple" style="font-size:15px">📋</div>
+    Nurilounge Roster
+    <span class="nav-badge" id="nb-roster">0</span>
+  </div>
+  <div class="nav-item" id="nav-ugc" onclick="showPage('ugc')">
+    <div class="nav-icon orange" style="font-size:15px">🎬</div>
+    UGC
+    <span class="nav-badge" id="nb-ugc">0</span>
   </div>
 </nav>
+
 <main class="main">
 
+<!-- OVERVIEW -->
 <div class="page active" id="page-overview">
-  <div class="page-header"><div class="page-title">Overview</div><div class="page-sub">챌린지 전체 현황</div></div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-    <div id="ov-toggles" class="ch-toggles" style="margin-bottom:0;flex:1"></div>
-    <button onclick="addChallenge()" class="btn" style="font-size:11px;padding:5px 12px">➕ 챌린지 추가</button>
-    <button onclick="removeChallenge()" class="btn" style="font-size:11px;padding:5px 12px;color:#ff6b9d">➖ 삭제</button>
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">전체 캠페인 현황</div></div>
+    <div class="branch-filter">
+      <button class="branch-btn active" onclick="setBranchFilter('all',this)">All</button>
+      <button class="branch-btn" onclick="setBranchFilter('Global',this)">Global</button>
+      <button class="branch-btn" onclick="setBranchFilter('US',this)">US</button>
+      <button class="branch-btn" onclick="setBranchFilter('KR',this)">KR</button>
+    </div>
   </div>
-  <div class="metrics">
-    <div class="metric"><div class="metric-label">전체 신청자</div><div class="metric-value" id="m-total">-</div></div>
-    <div class="metric"><div class="metric-label">제출 완료</div><div class="metric-value green" id="m-submitted">-</div></div>
-    <div class="metric"><div class="metric-label">미제출자</div><div class="metric-value red" id="m-missing">-</div></div>
-    <div class="metric"><div class="metric-label">제출률</div><div class="metric-value" id="m-rate">-</div></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">챌린지별 현황</span></div>
-    <table><thead><tr><th>챌린지</th><th>신청자</th><th>제출</th><th>미제출</th><th>제출률</th><th>메모</th></tr></thead>
-    <tbody id="challenge-summary"></tbody></table>
-  </div>
-  <div class="card">
+  <div id="overview-grid" class="grid-2"></div>
+
+  <!-- 인라인 캘린더 -->
+  <div class="card" style="margin-top:4px">
     <div class="card-header">
-      <span class="card-title">⭐ 베스트 콘텐츠</span>
-      <div class="controls">
-        <div id="best-filter-toggles" class="ch-toggles" style="margin-bottom:0"></div>
-        <input type="text" id="best-search" placeholder="이름 검색..." oninput="renderBest()" style="width:150px">
-        <button class="btn accent" onclick="toggleBestForm()" id="best-form-btn">➕ 추가</button>
+      <div class="card-title">📅 캠페인 일정</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn" onclick="ovCalPrev()" style="padding:4px 10px;font-size:11px">‹</button>
+        <span id="ov-cal-title" style="font-size:13px;font-weight:500;min-width:120px;text-align:center"></span>
+        <button class="btn" onclick="ovCalNext()" style="padding:4px 10px;font-size:11px">›</button>
       </div>
     </div>
-    <div id="best-form" style="display:none;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:16px;background:#f4f3ef">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">크리에이터 이름</label><input type="text" id="best-name" placeholder="Amy Rose" style="width:100%"></div>
-        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">챌린지</label>
-          <select id="best-challenge" style="width:100%"><option value="1">챌린지 1</option><option value="2">챌린지 2</option><option value="3">챌린지 3</option><option value="4">챌린지 4</option><option value="5">챌린지 5</option><option value="6">챌린지 6</option></select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px">
-        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">콘텐츠 URL</label><input type="text" id="best-url" placeholder="https://..." style="width:100%"></div>
-        <div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">메모</label><input type="text" id="best-memo" placeholder="조회수 높음" style="width:100%"></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn accent" onclick="addBest()">저장</button>
-        <button class="btn" onclick="toggleBestForm()">취소</button>
-      </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="ov-legend">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#4cb8ff"></div>Discord</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#30d158"></div>Nurilounge Campaign</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#bf5af2"></div>Nurilounge Roster</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#ff9f0a"></div>UGC</div>
     </div>
-    <div class="best-grid" id="best-grid"></div>
+    <div class="cal-grid" id="ov-cal-grid">
+      <div class="cal-dow">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div>
+      <div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow">토</div>
+    </div>
   </div>
 </div>
 
-<div class="page" id="page-submitted">
-  <div class="page-header"><div class="page-title">제출 완료</div><div class="page-sub">콘텐츠를 제출한 크리에이터 목록</div></div>
-  <div id="sub-toggles" class="ch-toggles"></div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">제출 목록</span></div>
-    <div class="search-wrap"><input type="text" id="search-sub" placeholder="이름, 이메일, 핸들 검색..." oninput="renderSubmitted()"></div>
-    <table><thead><tr><th>#</th><th>이름</th><th>Discord ID</th><th>이메일</th><th>챌린지</th><th>링크 1</th><th>링크 2</th></tr></thead>
-    <tbody id="submitted-table"></tbody></table>
-  </div>
-</div>
 
-<div class="page" id="page-missing">
-  <div class="page-header"><div class="page-title">미제출자</div><div class="page-sub">아직 콘텐츠를 제출하지 않은 크리에이터</div></div>
-  <div id="miss-toggles" class="ch-toggles"></div>
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">미제출자 목록</span>
-      <div class="controls">
-        <button class="btn" onclick="copyMissing()">📋 목록 복사</button>
-        <button class="btn accent" onclick="showPage('discord')">📢 공지 만들기</button>
-      </div>
-    </div>
-    <div class="search-wrap"><input type="text" id="search-miss" placeholder="이름, 이메일 검색..." oninput="renderMissing()"></div>
-    <table><thead><tr><th>#</th><th>이름</th><th>Discord ID</th><th>이메일</th><th>국가</th><th>챌린지</th></tr></thead>
-    <tbody id="missing-table"></tbody></table>
-  </div>
-</div>
-
+<!-- DISCORD -->
 <div class="page" id="page-discord">
-  <div class="page-header"><div class="page-title">디스코드 공지</div><div class="page-sub">챌린지 공지 메시지를 자동으로 생성합니다</div></div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">공지 생성</span></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      <select id="discord-ch" onchange="generateDiscord()"><option value="all">전체 챌린지</option></select>
-      <select id="discord-type" onchange="generateDiscord()">
-        <option value="reminder">⏰ 마감 리마인더</option>
-        <option value="missing">⚠️ 미제출자 태그</option>
-      </select>
-      <button class="btn accent" onclick="copyDiscord()">📋 복사하기</button>
-    </div>
-    <div class="discord-box" id="discord-preview"></div>
+  <div class="page-header">
+    <div><div class="page-title">Discord</div><div class="page-sub">챌린지 캠페인 관리</div></div>
+    <button class="btn primary" onclick="openModal('discord')">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      캠페인 추가
+    </button>
   </div>
+  <div id="discord-list"></div>
+</div>
+
+<!-- NURILOUNGE -->
+<div class="page" id="page-nurilounge">
+  <div class="page-header">
+    <div><div class="page-title">Nurilounge Campaign</div><div class="page-sub">누리라운지 캠페인 관리</div></div>
+    <button class="btn primary" onclick="openModal('nurilounge')">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      캠페인 추가
+    </button>
+  </div>
+  <div id="nurilounge-list"></div>
+</div>
+
+<!-- ROSTER -->
+<div class="page" id="page-roster">
+  <div class="page-header">
+    <div><div class="page-title">Nurilounge Roster</div><div class="page-sub">누리라운지 로스터 관리</div></div>
+    <button class="btn primary" onclick="openModal('roster')">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      캠페인 추가
+    </button>
+  </div>
+  <div id="roster-list"></div>
+</div>
+
+<!-- UGC -->
+<div class="page" id="page-ugc">
+  <div class="page-header">
+    <div><div class="page-title">UGC</div><div class="page-sub">UGC 캠페인 관리</div></div>
+    <button class="btn primary" onclick="openModal('ugc')">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      캠페인 추가
+    </button>
+  </div>
+  <div id="ugc-list"></div>
 </div>
 
 </main>
 </div>
+
+<!-- MODAL -->
+<div id="modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px;backdrop-filter:blur(8px)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">캠페인 추가</div>
+      <button onclick="closeModal()" class="btn" style="padding:5px 10px">✕</button>
+    </div>
+    <div id="modal-body"></div>
+    <div class="modal-footer">
+      <button onclick="closeModal()" class="btn">취소</button>
+      <button onclick="saveCampaign()" class="btn primary">저장</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const CH1_APPLICANTS = [
-  {email:"glambymichelleofficial@gmail.com",name:"Mihaela Mihova",handle:"misshell.gk",country:"Bulgaria",challenge:1},
-  {email:"valioftherags@gmail.com",name:"Valeria Iodice",handle:"valioftherags",country:"Italy",challenge:1},
-  {email:"vanitybyjennie@gmail.com",name:"Jennelyn Burgos",handle:"vanitybyjennie",country:"Italy",challenge:1},
-  {email:"jlkspnl.business@gmail.com",name:"Juliaka Espanol",handle:"jlklogs",country:"Philippines",challenge:1},
-  {email:"tashiadisu@gmail.com",name:"Aishat Disu",handle:"Aishadollarz",country:"Canada",challenge:1},
-  {email:"t12.rm7@gmail.com",name:"Natasha Mabini",handle:"pretty.serena00",country:"New Zealand",challenge:1},
-  {email:"mahimabachkaniwala22@icloud.com",name:"Mahima Bachkaniwala",handle:"mahimabachkaniwala22",country:"Canada",challenge:1},
-  {email:"fionamok0706@gmail.com",name:"Fiona Mok",handle:"Nanairl_",country:"Canada",challenge:1},
-  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"Itstianale",country:"United States",challenge:1},
-  {email:"laura.feelgoodskin@gmail.com",name:"Laura Caroline Thay",handle:"laura.feelgoodskin",country:"France",challenge:1},
-  {email:"alexa.mars.am28@gmail.com",name:"Alexa Marsili",handle:"aleinwonderland_____",country:"Italy",challenge:1},
-  {email:"llegadomyrel@gmail.com",name:"Myrell Llegado",handle:"ellll_rell_ugc",country:"Philippines",challenge:1},
-  {email:"maya.goodskin@gmail.com",name:"Michele Thay",handle:"maya.goodskin",country:"Netherlands",challenge:1},
-  {email:"barbie.hsp@gmail.com",name:"Barbie Malik",handle:"barbiemalik_creator",country:"Canada",challenge:1},
-  {email:"azzymary.rrr@gmail.com",name:"Azz Ymary Redondo",handle:"yma_wyyy",country:"Philippines",challenge:1},
-  {email:"riripichu.ugc@gmail.com",name:"Irish Zacate",handle:"Riripichu_ugc",country:"Philippines",challenge:1},
-  {email:"gamarradiana13@gmail.com",name:"Diana Gamarra Lencinas",handle:"diana_daily_glow",country:"Canada",challenge:1},
-  {email:"waforzd@gmail.com",name:"Alecsandra Bucsai",handle:"aleslayyy",country:"Netherlands",challenge:1},
-  {email:"hello@joshwasaintjames.com",name:"Joshwa Saint James",handle:"JoshwaStJames",country:"United Kingdom",challenge:1},
-  {email:"collabswithfathia@gmail.com",name:"Fathia Rabiu",handle:"fathiaa.glow",country:"United States",challenge:1},
-  {email:"karegtzcollabs@gmail.com",name:"Karely Gutierrez",handle:"Karegtz",country:"United States",challenge:1},
-  {email:"yvjucel@gmail.com",name:"Julia Sayco",handle:"ugc.yveillia",country:"Philippines",challenge:1},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"USA",challenge:1},
-  {email:"424.kangsoojung@gmail.com",name:"Soo Jung Kang",handle:"https.sjs",country:"Philippines",challenge:1},
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",country:"United States",challenge:1},
-  {email:"chlzaraneta@gmail.com",name:"Chalzea Pagtud",handle:"zeaaraneta",country:"Philippines",challenge:1},
-  {email:"samanlifestyle@gmail.com",name:"Saman Habib",handle:"samanlifestyle",country:"Canada",challenge:1},
-  {email:"moomalmoghul@gmail.com",name:"Moomal Moghul",handle:"moomalproartist",country:"United Kingdom",challenge:1},
-  {email:"yangajoir@gmail.com",name:"Aliyah Rioja",handle:"cz.liaa",country:"United States",challenge:1},
-  {email:"amyrose92m@gmail.com",name:"Amy Rose Magnaye",handle:"amyrozzy",country:"Netherlands",challenge:1},
-  {email:"ngocboni0512@gmail.com",name:"Thai Nhu Ngoc Truong",handle:"Ngocboni",country:"Canada",challenge:1},
-  {email:"muapriyankasoni@gmail.com",name:"Priyanka Soni",handle:"prismaticpalettebypriyanka",country:"Canada",challenge:1},
-  {email:"elaineh101011@gmail.com",name:"Laurie Liu",handle:"wonyy494",country:"Canada",challenge:1},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"USA",challenge:1},
-  {email:"anelorman1@gmail.com",name:"Anel Orman",handle:"anell_orman",country:"Japan",challenge:1},
-  {email:"ifeanyieva2@gmail.com",name:"Ifeanyi Angel",handle:"Classicquinn",country:"France",challenge:1},
-  {email:"prcherrycoca67@gmail.com",name:"Cherrycoca",handle:"cherrycoca",country:"UK",challenge:1},
-  {email:"shela78@hotmail.it",name:"Silvia Pavone",handle:"truth__for__life",country:"Italy",challenge:1},
-  {email:"michellemarino@myyahoo.com",name:"Michelle Marino",handle:"michelle.marino.02",country:"Italy",challenge:1},
-  {email:"mariamkhacolab@gmail.com",name:"Mariam Kharazishvili",handle:"mariamkhara4",country:"United States",challenge:1},
-  {email:"aldijana.tufekcic@gmail.com",name:"Aldijana Tufekcic",handle:"aldijana0812",country:"Germany",challenge:1},
-  {email:"antonyan.tanechka@gmail.com",name:"Tetiana Antonian",handle:"antonyan.tanechka",country:"Germany",challenge:1},
-  {email:"agathevdle@gmail.com",name:"Agathe Videlaine",handle:"agathevdle",country:"France",challenge:1},
-  {email:"makeup28glam@gmail.com",name:"Yreissa Frontado",handle:"Makeupglamua",country:"Germany",challenge:1},
-  {email:"noeliahernandezarias07@gmail.com",name:"Noelia Hernandez",handle:"noelia.hern",country:"Germany",challenge:1},
-  {email:"aylin.liebt@gmail.com",name:"Aylin Baspinar",handle:"Aylin.liebt",country:"Germany",challenge:1},
-  {email:"ziamamne@gmail.com",name:"Floriana Gentile",handle:"zia_mamne",country:"Italy",challenge:1},
-  {email:"wynneugc@gmail.com",name:"Wynne Xiesoria",handle:"mindofwynne",country:"Germany",challenge:1},
-  {email:"marianamantoan@yahoo.com",name:"Mariana Mantoan Costa",handle:"mahmantoanugc",country:"USA",challenge:1},
-  {email:"claudinhanutri15@gmail.com",name:"Claudia Ramos Gilli",handle:"claudinhanutri15",country:"United States",challenge:1},
-  {email:"collabsbygiharyar@gmail.com",name:"Gihary Alvarez",handle:"Giharyar_",country:"United States",challenge:1},
-  {email:"rizzardi.elena@yahoo.it",name:"Elena Rizzardi",handle:"elenarizzardi",country:"Italy",challenge:1},
-  {email:"theskincaresaga@gmail.com",name:"Salma Sultana",handle:"Theskincare_saga",country:"USA",challenge:1},
-  {email:"brendacecile31@gmail.com",name:"Cecile Brenda",handle:"CecileBrenda",country:"Canada",challenge:1},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"MARLYNMARTINEZZ",country:"United States",challenge:1},
-  {email:"almeidaaklam@gmail.com",name:"Almeida Malka",handle:"almeidailyyy",country:"United Kingdom",challenge:1},
-  {email:"effeabiola@gmail.com",name:"Fabiola Coppola",handle:"effeabiola",country:"Italy",challenge:1},
-  {email:"karabokaphwiyo1@gmail.com",name:"Karabo Kaphwiyo",handle:"karabo.kaphwiyo",country:"South Africa",challenge:1},
-  {email:"simo5derose@hotmail.it",name:"Simona De Rose",handle:"mammagirotondo",country:"Italy",challenge:1},
-  {email:"gloriamakeupmua@gmail.com",name:"Gloria Melizza",handle:"gloriamakeupart",country:"Italy",challenge:1},
-  {email:"soulandstyle25@gmail.com",name:"Mubashir Nawaz",handle:"stylebykoml",country:"UAE",challenge:1},
-  {email:"ainakamran25@gmail.com",name:"Aina Kamran",handle:"Blog_aina",country:"UAE",challenge:1},
-  {email:"glowingsisterss@gmail.com",name:"Hannah Shah",handle:"theglowingsisters6",country:"UAE",challenge:1},
-  {email:"marisparkle12@gmail.com",name:"Maryam Khan",handle:"mari.lovebot",country:"UAE",challenge:1},
-  {email:"hiramughal082@gmail.com",name:"Hira Mughal",handle:"content_by_h",country:"UAE",challenge:1},
-  {email:"humeracollab29@gmail.com",name:"Humera Khadija",handle:"bookish.datenights",country:"UAE",challenge:1},
-  {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",country:"UAE",challenge:1},
-  {email:"lifestyleofhaya@gmail.com",name:"Haya Khan",handle:"lifestyleofhaya",country:"UAE",challenge:1},
-];
-const CH2_APPLICANTS = [
-  {email:"jlkspnl.business@gmail.com",name:"Juliaka Español",handle:"jlklogs",country:"Philippines",challenge:2},
-  {email:"mariacastellanx@gmail.com",name:"Maria Castellano",handle:"marysdraft_",country:"Italy",challenge:2},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:2},
-  {email:"ifeanyieva2@gmail.com",name:"Ifeanyi Angel",handle:"Classicquinn",country:"France",challenge:2},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:2},
-  {email:"crystalnabi68@gmail.com",name:"Ramona Magadan",handle:"crystal.nabi",country:"Romania",challenge:2},
-  {email:"vlarusya@gmail.com",name:"Tetiana Loshkarova",handle:"vlarusya_test",country:"Germany",challenge:2},
-  {email:"nattym2626@yahoo.com",name:"Natalia Buciuscan",handle:"sunsetscatchers",country:"Italy",challenge:2},
-  {email:"prcherrycoca67@gmail.com",name:"Cherry Coca",handle:"cherry_coca12",country:"UK",challenge:2},
-  {email:"she38304@gmail.com",name:"Sheza Hossain",handle:"flowers23540",country:"Australia",challenge:2},
-  {email:"fionamok0706@gmail.com",name:"Fiona Mok",handle:"Nanairl_",country:"Canada",challenge:2},
-  {email:"kds.sum11@gmail.com",name:"Nan Kaday San",handle:"k_san",country:"Singapore",challenge:2},
-  {email:"federicaticali.collab@gmail.com",name:"Federica Ticali",handle:"federicaticali",country:"Italy",challenge:2},
-  {email:"melnichenkoanechka1822@gmail.com",name:"Anna Melnichenko",handle:"nyutka_svyat",country:"Bulgaria",challenge:2},
-  {email:"sara.schi.me@gmail.com",name:"Sara Vrdelja",handle:"schi_me1",country:"Croatia",challenge:2},
-  {email:"bondadmary@gmail.com",name:"Mary Louise Bondad",handle:"merilowisss",country:"Philippines",challenge:2},
-  {email:"yvjucel@gmail.com",name:"Julia Sayco",handle:"yveillia",country:"Philippines",challenge:2},
-  {email:"runnaktss@gmail.com",name:"Chinelberel Ulambayar",handle:"runna_kts",country:"Mongolia",challenge:2},
-  {email:"amyrose92m@gmail.com",name:"Amy Rose Magnaye",handle:"amyrozzy",country:"Netherlands",challenge:2},
-  {email:"brownlatte27@gmail.com",name:"Ankita Satija",handle:"brownlatte27",country:"Australia",challenge:2},
-  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:2},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:2},
-  {email:"elizabeth.lozanoochoa1997@gmail.com",name:"Elizabeth Lozano Ochoa",handle:"Elizalozano.creator",country:"United States",challenge:2},
-  {email:"valioftherags@gmail.com",name:"Valeria Iodice",handle:"valioftherags",country:"Italy",challenge:2},
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:2},
-  {email:"makeupbyain@gmail.com",name:"Qurat-ul-ain Saad",handle:"Makeupby_ain",country:"Canada",challenge:2},
-  {email:"samanlifestyle@gmail.com",name:"Saman Habib",handle:"samanlifestyle",country:"Canada",challenge:2},
-  {email:"c.lazalabusiness@gmail.com",name:"Cheila Lazala",handle:"Cheila.lazala",country:"United States",challenge:2},
-  {email:"tunmiseesther357@gmail.com",name:"Olutunmise Esther",handle:"estherugc00",country:"United States",challenge:2},
-  {email:"agathevdle@gmail.com",name:"Agathe Videlaine",handle:"agathevdle",country:"France",challenge:2},
-  {email:"asyacreates.ugc@gmail.com",name:"Asya P",handle:"asyacreates._",country:"Canada",challenge:2},
-  {email:"shela78@hotmail.it",name:"Silvia Pavone",handle:"truth__for__life",country:"Italy",challenge:2},
-  {email:"waforzd@gmail.com",name:"Alecsandra Bucsai",handle:"aleslayyy",country:"Netherlands",challenge:2},
-  {email:"aldijana.tufekcic@gmail.com",name:"Aldijana Tufekcic",handle:"aldijana0812",country:"Germany",challenge:2},
-  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:2},
-  {email:"glambymichelleofficial@gmail.com",name:"Mihaela Mihova",handle:"misshell.gk",country:"Bulgaria",challenge:2},
-  {email:"budriagina@gmail.com",name:"Gina Budria",handle:"ginabudria",country:"United States",challenge:2},
-  {email:"424.kangsoojung@gmail.com",name:"Soo Jung Kang",handle:"Https.sjs",country:"Philippines",challenge:2},
-  {email:"contacto.dayavarela@gmail.com",name:"Dayana Varela",handle:"Dayavarela",country:"United States",challenge:2},
-  {email:"preciousadesola01@yahoo.com",name:"Precious Ojo",handle:"Preciousadesolaojo",country:"Canada",challenge:2},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"marlynmartinezz",country:"United States",challenge:2},
-  {email:"makeup28glam@gmail.com",name:"Yreissa Frontado",handle:"Makeupglamua",country:"Germany",challenge:2},
-  {email:"mahimabachkaniwala22@icloud.com",name:"Mahima Bachkaniwala",handle:"mahimabachkaniwala22",country:"Canada",challenge:2},
-  {email:"skinwithkcollabs@outlook.com",name:"Jimoh Toyeeb",handle:"skin.with.k",country:"United States",challenge:2},
-  {email:"mariamkhacolab@gmail.com",name:"Mariam Kharazishvili",handle:"mariamkhara4",country:"United States",challenge:2},
-  {email:"bandac.iulia@yahoo.com",name:"Iulia Stefana Bandac",handle:"iuliabandac",country:"Romania",challenge:2},
-  {email:"tashiadisu@gmail.com",name:"Aishat Disu",handle:"Aishadollarz",country:"Canada",challenge:2},
-  {email:"k.timurovna96@gmail.com",name:"Karyna Yenaliieva",handle:"karinaenalieva",country:"Germany",challenge:2},
-  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",country:"United States",challenge:2},
-  {email:"moomalmoghul@gmail.com",name:"Moomal Moghul",handle:"moomalproartist",country:"United Kingdom",challenge:2},
-  {email:"t12.rm7@gmail.com",name:"Natasha Mabini",handle:"Ugc.blaire",country:"New Zealand",challenge:2},
-  {email:"business.pkq@gmail.com",name:"Pauline Karla Quijano",handle:"Paulinee_ko",country:"Australia",challenge:2},
-  {email:"michellemarino@myyahoo.com",name:"Michelle Marino",handle:"Michelle.marino.02",country:"Italy",challenge:2},
-  {email:"ziamamne@gmail.com",name:"Floriana Gentile",handle:"zia_mamne",country:"Italy",challenge:2},
-  {email:"chiara.costantino84@gmail.com",name:"Chiara Costantino",handle:"Chiara.costantino84",country:"Italy",challenge:2},
-  {email:"marianamorel00@gmail.com",name:"Aslaively Made",handle:"Aslamadem",country:"United States",challenge:2},
-  {email:"muapriyankasoni@gmail.com",name:"Priyanka Soni",handle:"Prismaticpalettebypriyanka",country:"Canada",challenge:2},
-  {email:"collabsbygiharyar@gmail.com",name:"Gihary Alvarez",handle:"Giharyarugccreator",country:"United States",challenge:2},
-  {email:"collabswithfathia@gmail.com",name:"Fathia Rabiu",handle:"fathiaa.glow",country:"United States",challenge:2},
-  {email:"victoriaosamor95@gmail.com",name:"Victoria Akinsola",handle:"Teddievic",country:"Canada",challenge:2},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:2},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:2},
-  {email:"fernandezjohalin@gmail.com",name:"Johalin Bermudez",handle:"Doncellafernandez",country:"United States",challenge:2},
-  {email:"enevicky906@gmail.com",name:"Victory Ene Andy",handle:"Specialshuga",country:"United States",challenge:2},
-  {email:"skinlovee333@gmail.com",name:"Elene Khutsishvili",handle:"skinnnlovee",country:"United States",challenge:2},
-  {email:"yulia485u@gmail.com",name:"Yuliia Panchenko",handle:"yulitests",country:"Germany",challenge:2},
-  {email:"rashmitamang799@gmail.com",name:"Rashmi Tamang",handle:"_im_rashmi__",country:"Australia",challenge:2},
-  {email:"akimenkoanna24@gmail.com",name:"Anna Akimenko",handle:"anna_testerin",country:"Germany",challenge:2},
-  {email:"mariamercedesc23@gmail.com",name:"Maria Mercedes Cueto",handle:"mariamercedescueto",country:"United States",challenge:2},
-  {email:"itshonestreviewofficial@gmail.com",name:"Funmilayo Makinde",handle:"Its.honestreview",country:"United States",challenge:2},
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"briannany31",country:"United States",challenge:2},
-  {email:"vivssmakeup@gmail.com",name:"Viviana Salvemini",handle:"vivs_makeup",country:"Italy",challenge:2},
-  {email:"goldenglem@gmail.com",name:"Sumaia Kamwar",handle:"slaywith.sumaia",country:"Canada",challenge:2},
-  {email:"ozbekseher@yahoo.com",name:"Seher Ozbek",handle:"dexy_thecat",country:"Italy",challenge:2},
-  {email:"collaborationkisil@gmail.com",name:"Iryna Kisil",handle:"official_irinakisil",country:"Czech Republic",challenge:2},
-  {email:"blogdialena@gmail.com",name:"Alena Morava",handle:"Blogdialena",country:"Italy",challenge:2},
-  {email:"ainakamran25@gmail.com",name:"Aina Kamran",handle:"Blog_aina",country:"UAE",challenge:2},
-  {email:"bsskin00@gmail.com",name:"Bharti Kishan Lal",handle:"bsskintalk",country:"UAE",challenge:2},
-  {email:"shwetashinde955@gmail.com",name:"Shweta Shinde",handle:"the_shwebey",country:"UAE",challenge:2},
-  {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",country:"UAE",challenge:2},
-  {email:"mdxglams@gmail.com",name:"Maram Dahmani",handle:"mdxglams",country:"UAE",challenge:2},
-  {email:"soulandstyle25@gmail.com",name:"Mubashir Nawaz",handle:"stylebykoml",country:"UAE",challenge:2},
-];
-const CH3_APPLICANTS = [
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:3},
-  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:3},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:3},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:3},
-  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",country:"United States",challenge:3},
-  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:3},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:3},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:3},
-  {email:"kanuchinenye12@gmail.com",name:"Chinenye Kanu",handle:"Trywithchi",country:"United States",challenge:3},
-  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:3},
-  {email:"tunmiseesther357@gmail.com",name:"Esther Olutunmise",handle:"estherugc00",country:"United States",challenge:3},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:3},
-  {email:"berevoice13ugc@gmail.com",name:"Berenice Ramos H",handle:"Berevoice13",country:"United States",challenge:3},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"Marlynmartinezz",country:"United States",challenge:3},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:3},
-  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"Itstianale",country:"United States",challenge:3},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:3},
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:3},
-  {email:"archu8099@gmail.com",name:"Archana Surigala",handle:"Romilly2000s",country:"United States",challenge:3},
-  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"fatimaescobar77",country:"United States",challenge:3},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:3},
-  {email:"mariamercedesc23@gmail.com",name:"Maria Cueto",handle:"Mariamercedescueto",country:"United States",challenge:3},
-];
-const CH4_APPLICANTS = [
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",country:"United States",challenge:4},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"Isabella.bracamonte",country:"United States",challenge:4},
-  {email:"filigreefall@gmail.com",name:"Erika K",handle:"filigreefall",country:"United States",challenge:4},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",country:"United States",challenge:4},
-  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
-  {email:"ana.loran@icloud.com",name:"Ana Abreu",handle:"analouab",country:"United States",challenge:4},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"mua_sophio",country:"United States",challenge:4},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",country:"United States",challenge:4},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",country:"United States",challenge:4},
-  {email:"aidacanetti@gmail.com",name:"Aida Canetti",handle:"Aidasworld96",country:"United States",challenge:4},
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"Rosariomaria1716",country:"United States",challenge:4},
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",country:"United States",challenge:4},
-  {email:"dreamsy66@gmail.com",name:"Marbella Gonzalez",handle:"dreamsy66",country:"United States",challenge:4},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",country:"United States",challenge:4},
-  {email:"chezzlaura.collab@gmail.com",name:"Laura Larivoir",handle:"chezzlaura",country:"United States",challenge:4},
-  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",country:"United States",challenge:4},
-  {email:"glowithsarahlee@gmail.com",name:"Sarah Lee",handle:"Glowithsarahlee",country:"United States",challenge:4},
-  {email:"collabswithfathia@gmail.com",name:"Fathia Rabiu",handle:"fathiaa.glow",country:"United States",challenge:4},
-  {email:"makeupbyalissaskye@gmail.com",name:"Alissa Ramos-Waldron",handle:"Alissaskyee",country:"United States",challenge:4},
-  {email:"fatimadugc@gmail.com",name:"Fatima Duarte",handle:"Fatimaescobar77",country:"United States",challenge:4},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",country:"United States",challenge:4},
-  {email:"shantalhvs95@outlook.com",name:"Shantal Holguin Veras",handle:"Shantalmarieh",country:"United States",challenge:4},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"Natwolf0",country:"United States",challenge:4},
-];
-const CH1_SUBMISSIONS = [
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"Briannany31",url:"https://www.instagram.com/reel/DU5iOUvkXAd/",challenge:1},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"katespace0652",url:"https://www.instagram.com/reel/DU_f7GAEqi_/",challenge:1},
-  {email:"hello@joshwasaintjames.com",name:"Joshwa Saint James",handle:"JoshwaStJames",url:"https://vm.tiktok.com/ZNRPsomNy/",challenge:1},
-  {email:"t12.rm7@gmail.com",name:"Natasha Mabini",handle:"serena.blaire",url:"https://www.instagram.com/reel/DVAbn_FkaFF/",challenge:1},
-  {email:"samanlifestyle@gmail.com",name:"Saman Habib",handle:"samanlifestyle",url:"https://www.instagram.com/reel/DVAHraHidit/",challenge:1},
-  {email:"collabsbygiharyar@gmail.com",name:"Gihary Alvarez",handle:"giharyar",url:"https://www.tiktok.com/t/ZP8xNvsGN/",challenge:1},
-  {email:"waforzd@gmail.com",name:"Alecsandra Bucsai",handle:"ig_aleslayyy",url:"https://www.instagram.com/reel/DVCLKlEDHUg/",challenge:1},
-  {email:"antonyan.tanechka@gmail.com",name:"Tetiana Antonian",handle:"ig_antonyan.tanechka",url:"https://www.instagram.com/reel/DVCCG86DTpQ/",challenge:1},
-  {email:"antonyan.tanechka@gmail.com",name:"Tetiana Antonian",handle:"ig_antonyan.tanechka",url:"https://vt.tiktok.com/ZSmHrbT9n/",challenge:1},
-  {email:"fionamok0706@gmail.com",name:"Fiona Mok",handle:"nanaversal",url:"https://www.tiktok.com/@nanairl_/video/7609468518559534354",challenge:1},
-  {email:"mahimabachkaniwala22@icloud.com",name:"Mahima Bachkaniwala",handle:"mahima.b",url:"https://www.instagram.com/reel/DVDLRcXDhXS/",challenge:1},
-  {email:"aldijana.tufekcic@gmail.com",name:"Aldijana Tufekcic",handle:"aldijana0812",url:"https://www.instagram.com/reel/DVB2d5-CJgi/",challenge:1},
-  {email:"ngocboni0512@gmail.com",name:"Thai Nhu Ngoc Truong",handle:"ngocboni",url:"https://www.instagram.com/reel/DVEOa0MjafQ/",challenge:1},
-  {email:"prcherrycoca67@gmail.com",name:"Cherrycoca",handle:"cherrycoca0825",url:"https://vt.tiktok.com/ZSmxeWV1a/",challenge:1},
-  {email:"prcherrycoca67@gmail.com",name:"Cherrycoca",handle:"cherrycoca0825",url:"https://vt.tiktok.com/ZSmxeWV1a/",challenge:1},
-  {email:"vanitybyjennie@gmail.com",name:"Jennelyn Burgos",handle:"vanitybyjennie",url:"https://www.instagram.com/reel/DVEk-W7CLgu/",challenge:1},
-  {email:"laura.feelgoodskin@gmail.com",name:"Laura Caroline Thay",handle:"laura.feelgoodskin",url:"https://vm.tiktok.com/ZNR5Rght8/",challenge:1},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"marlyn_97044_82652",url:"https://www.instagram.com/reel/DVEPXjKkaAW/",challenge:1},
-  {email:"collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"marlyn_97044_82652",url:"https://vt.tiktok.com/ZSmCFUp38/",challenge:1},
-  {email:"wynneugc@gmail.com",name:"Wynne Xiesoria",handle:"pastriesyu",url:"https://www.instagram.com/reel/DVF1_sHCKN0/",challenge:1},
-  {email:"jlkspnl.business@gmail.com",name:"Juliaka Espanol",handle:"jlklogs",url:"https://vt.tiktok.com/ZSmQ9SWoL/",challenge:1},
-  {email:"ainakamran25@gmail.com",name:"Aina Kamran",handle:"blog_aina_57775",url:"https://www.instagram.com/reel/DVG0DaigWmE/",challenge:1},
-  {email:"ainakamran25@gmail.com",name:"Aina Kamran",handle:"blog_aina_57775",url:"https://www.instagram.com/reel/DVG0DaigWmE/",challenge:1},
-  {email:"ainakamran25@gmail.com",name:"Aina Kamran",handle:"blog_aina_57775",url:"https://www.instagram.com/reels/DVEh8L4ga4R/",challenge:1},
-  {email:"glambymichelleofficial@gmail.com",name:"Mihaela Mihova",handle:"misshell.gk",url:"https://vm.tiktok.com/ZNR5hmkha/",challenge:1},
-  {email:"muapriyankasoni@gmail.com",name:"Priyanka Soni",handle:"prismaticpalettebypriyanka",url:"https://www.instagram.com/reel/DVEh8L4ga4R/",challenge:1},
-  {email:"muapriyankasoni@gmail.com",name:"Priyanka Soni",handle:"prismaticpalettebypriyanka",url:"https://www.instagram.com/reel/DVJKaUhDUzf/",challenge:1},
-  {email:"muapriyankasoni@gmail.com",name:"Priyanka Soni",handle:"prismaticpalettebypriyanka",url:"https://www.instagram.com/reels/DVEh8L4ga4R/",challenge:1},
-  {email:"amyrose92m@gmail.com",name:"Amy Rose Magnaye",handle:"amyrozzy",url:"https://vm.tiktok.com/ZGduYdhkx/",challenge:1},
-  {email:"valioftherags@gmail.com",name:"Valeria Iodice",handle:"valioftherags",url:"https://www.instagram.com/reel/DVHMIHGglM3/",challenge:1},
-  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"t.7510",url:"https://www.tiktok.com/t/ZP8xjXxbv/",challenge:1},
-  {email:"tashiadisu@gmail.com",name:"Aishat Disu",handle:"aishat0160",url:"https://vt.tiktok.com/ZSmVNQDtN/",challenge:1},
-  {email:"gamarradiana13@gmail.com",name:"Diana Gamarra Lencinas",handle:"meilin5549",url:"https://www.instagram.com/reel/DVMmip4EVQS/",challenge:1},
-  {email:"maya.goodskin@gmail.com",name:"Michele Thay",handle:"maya.goodskin",url:"https://vm.tiktok.com/ZGdujTMVR/",challenge:1},
-  {email:"yvjucel@gmail.com",name:"Julia Sayco",handle:"ugc.yveillia",url:"https://www.instagram.com/reel/DVV48bbk9f_/",challenge:1},
-  {email:"shela78@hotmail.it",name:"Silvia Pavone",handle:"ig_truth__for__life_97287",url:"https://www.instagram.com/reel/DVWFmZEDNhY/",challenge:1},
-  {email:"moomalmoghul@gmail.com",name:"Moomal Moghul",handle:"moomalproartist",url:"https://www.instagram.com/reel/DVOtFWqjD35/",challenge:1},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"muasophio",url:"https://vt.tiktok.com/ZSmKEwBWo/",challenge:1},
-  {email:"ifeanyieva2@gmail.com",name:"Ifeanyi Angel",handle:"classic_quinn",url:"https://vm.tiktok.com/ZNRmyJGUE/",challenge:1},
-  {email:"soulandstyle25@gmail.com",name:"Komal Basharat",handle:"koml123",url:"https://vt.tiktok.com/ZSuLr67gj/",challenge:1},
-  {email:"anelorman1@gmail.com",name:"Anel Orman",handle:"anell_orman",url:"https://www.instagram.com/reel/DVm2KQ0ka2k/",challenge:1},
-  {email:"humeracollab29@gmail.com",name:"Humera Khadija",handle:"humera.k",url:"https://www.instagram.com/reel/DVoMvYzDPc-/",challenge:1},
-  {email:"alexa.mars.am28@gmail.com",name:"Alexa Marsili",handle:"alexamars_",url:"https://www.instagram.com/reel/DVs70yWjIRl/",challenge:1},
-  {email:"agathevdle@gmail.com",name:"Agathe Videlaine",handle:"agathevdle_39033",url:"https://www.tiktok.com/@agathevdle/video/7616786317753470230",challenge:1},
-  {email:"makeup28glam@gmail.com",name:"Yreissa Frontado",handle:"makeupglamua",url:"https://www.instagram.com/reel/DWHJyUhCOAH/",challenge:1},
-  {email:"ziamamne@gmail.com",name:"Floriana Gentile",handle:"zia_mamne",url:"https://www.tiktok.com/@zia_mamne_ugc/video/7620407014715297046",challenge:1},
-  {email:"glowingsisterss@gmail.com",name:"Hannah Akil",handle:"theglowingsisters",url:"https://vt.tiktok.com/ZSuWtmE3m/",challenge:1},
-  {email:"marisparkle12@gmail.com",name:"Maryam Khan",handle:"mari.lovebot",url:"https://www.tiktok.com/@mari.lovebot/video/7622605696948768020",challenge:1},
-  {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",url:"https://www.instagram.com/reel/DWgPVRYCro-/",challenge:1},
-];
-const CH2_SUBMISSIONS = [
-  {email:"jlkspnl.business@gmail.com",name:"Juliaka Espanol",handle:"jlklogs",url:"https://vt.tiktok.com/ZSmnBHSPX/",challenge:2},
-  {email:"bondadmary@gmail.com",name:"Mary Louise Bondad",handle:"merilowisss",url:"https://vt.tiktok.com/ZSmWNYL9j/",challenge:2},
-  {email:"mrosariovaldez55@gmail.com",name:"María Rosario Valdez",handle:"mariarosario0474_17110",url:"https://vt.tiktok.com/ZSmWsXMEb/",challenge:2},
-  {email:"nattym2626@yahoo.com",name:"Natalia Buciuscan",handle:"nattym2626",url:"https://vm.tiktok.com/ZNRaxJAop/",challenge:2},
-  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",url:"https://www.tiktok.com/t/ZThnngryj/",challenge:2},
-  {email:"sophie.tsivtsivadze@gmail.com",name:"Sophio Tsivtsivadze",handle:"muasophio",url:"https://vt.tiktok.com/ZSmKdFUYr/",challenge:2},
-  {email:"bm-320053collab.marlynmartinez@gmail.com",name:"Marlyn Martinez",handle:"marlyn_97044_82652",url:"https://www.instagram.com/reel/DVeAzcCAEtb/",challenge:2},
-  {email:"glambymichelleofficial@gmail.com",name:"Mihaela Mihova",handle:"misshell.gk",url:"https://vm.tiktok.com/ZNRmUuFf8/",challenge:2},
-  {email:"agathevdle@gmail.com",name:"Agathe Videlaine",handle:"agathevdle_39033",url:"https://www.tiktok.com/@agathevdle/video/7613877245068807426",challenge:2},
-  {email:"shela78@hotmail.it",name:"Silvia Pavone",handle:"ig_truth__for__life_97287",url:"https://www.instagram.com/reel/DVjNffuDJoy/",challenge:2},
-  {email:"sara.schi.me@gmail.com",name:"Sara Vrdelja",handle:"schi_me1",url:"https://www.instagram.com/reel/DVjQTL2iBBd/",challenge:2},
-  {email:"she38304@gmail.com",name:"Sheza Hossain",handle:"shcat_2112",url:"https://vt.tiktok.com/ZSuNu6RB5/",challenge:2},
-  {email:"mariacastellanx@gmail.com",name:"Maria Castellano",handle:"marysdraft.",url:"https://vm.tiktok.com/ZNRue2N2B/",challenge:2},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",url:"https://www.instagram.com/reel/DVg5khjkXOH/",challenge:2},
-  {email:"federicaticali.collab@gmail.com",name:"Federica Ticali",handle:"federicaticali",url:"https://vm.tiktok.com/ZNRuYSPcY/",challenge:2},
-  {email:"aldijana.tufekcic@gmail.com",name:"Aldijana Tufekcic",handle:"aldijana0812",url:"https://www.instagram.com/reel/DVom9p8iMRq/",challenge:2},
-  {email:"amyrose92m@gmail.com",name:"Amy Rose Magnaye",handle:"amyrozzy",url:"https://vm.tiktok.com/ZGduUA7Y6/",challenge:2},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"jemirasan",url:"https://vt.tiktok.com/ZSujxVSA8/",challenge:2},
-  {email:"michellemarino@myyahoo.com",name:"Michelle Marino",handle:"miscy_0211",url:"https://vm.tiktok.com/ZNRuhmhWh/",challenge:2},
-  {email:"mellissaj44@gmail.com",name:"Brianna Bukovinsky",handle:"632_trigga_34631",url:"https://www.instagram.com/reel/DVqayS0DYDU/",challenge:2},
-  {email:"marianamorel00@gmail.com",name:"Asla Made",handle:"asla0270",url:"https://vt.tiktok.com/ZSukRdc5K/",challenge:2},
-  {email:"mdxglams@gmail.com",name:"Maram Dahmani",handle:"mdxglams",url:"https://www.instagram.com/p/DVyiHueMe12/",challenge:2},
-  {email:"chiara.costantino84@gmail.com",name:"Chiara Costantino",handle:"chiara.costantino84",url:"https://www.instagram.com/reel/DV55wJno_sz/",challenge:2},
-  {email:"prcherrycoca67@gmail.com",name:"Cherrycoca",handle:"cherrycoca0825",url:"https://vt.tiktok.com/ZSuusYFxw/",challenge:2},
-  {email:"ziamamne@gmail.com",name:"Floriana Gentile",handle:"zia_mamne1",url:"https://www.instagram.com/p/DV58Xp-iOqA/",challenge:2},
-  {email:"crystalnabi68@gmail.com",name:"Ramona Magadan",handle:"denyra18",url:"https://vm.tiktok.com/ZNR96VVyw/",challenge:2},
-  {email:"melnichenkoanechka1822@gmail.com",name:"Anna Melnichenko",handle:"tt_nyutka_svyat",url:"https://vt.tiktok.com/ZSuXaV2dP/",challenge:2},
-  {email:"blogdialena@gmail.com",name:"Alena Morava",handle:"blogdialena",url:"https://www.instagram.com/reel/DWBS092iDCX/",challenge:2},
-  // 중복 제출 (중복감지용)
-  {email:"mrosariovaldez55@gmail.com",name:"María Rosario Valdez",handle:"mariarosario0474_17110",url:"https://www.instagram.com/reel/DVUWpPUjhO_/",challenge:2},
-  {email:"bondadmary@gmail.com",name:"Mary Louise Bondad",handle:"merilowisss",url:"https://vt.tiktok.com/ZSmvPf6Dr/",challenge:2},
-  // 새 제출자
-  {email:"waforzd@gmail.com",name:"Alecsandra Bucsai",handle:"ig_aleslayyy",url:"https://www.instagram.com/p/DWFAl0CjKHQ/",challenge:2},
-  {email:"moomalmoghul@gmail.com",name:"Moomal Moghul",handle:"moomalproartist",url:"https://vm.tiktok.com/ZNR9KHx7J/",challenge:2},
-  {email:"rashmitamang799@gmail.com",name:"Rashmi Tamang",handle:"_im_rashmi__",url:"https://www.instagram.com/reel/DWN62b_gg0G/",challenge:2},
-  {email:"ifeanyieva2@gmail.com",name:"Ifeanyi Angel",handle:"classic_quinn",url:"https://vm.tiktok.com/ZNRxCs3Hy/",challenge:2},
-  {email:"bsskin00@gmail.com",name:"Bharti Kishan Lal",handle:"ig_bsskintalk",url:"https://www.instagram.com/reel/DWRY5SFCORq/",challenge:2},
-  {email:"bandac.iulia@yahoo.com",name:"Iulia Bandac",handle:"iuliabandac",url:"https://vm.tiktok.com/ZNRxnqB6V/",challenge:2},
-  {email:"tarannum2005sayyad@gmail.com",name:"Taranum Sshahin",handle:"taranum_sshahin",url:"https://www.instagram.com/reel/DWjXBqRiijl/",challenge:2},
-  {email:"rutholutunmise@gmail.com",name:"Ruth Olutunmise",handle:"ruthugcskincare",url:"https://vm.tiktok.com/ZGdusQemq/",challenge:2},
-  {email:"minabfaisal@gmail.com",name:"Cherrycoca",handle:"cherrycoca12",url:"https://vt.tiktok.com/ZSuusYFxw/",challenge:2},
-];
-const CH3_SUBMISSIONS = [
-  {email:"byvalentinabeaut@gmail.com",name:"Valentina Rodriguez",handle:"Byvalentinabeauty",url:"https://www.instagram.com/reel/DWOuSQZjNak/",challenge:3},
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",url:"https://www.instagram.com/reel/DWO55c0xvi6/",challenge:3},
-  {email:"shayreviewsitall@gmail.com",name:"Shayle Hornaday",handle:"ugcshay",url:"https://www.instagram.com/reel/DWPR-mCD_xa/",challenge:3},
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",url:"https://vt.tiktok.com/ZSuWspEoe/",challenge:3},
-  {email:"mrosariovaldez55@gmail.com",name:"María Rosario Valdez",handle:"TT_rosariomaria1716",url:"https://vt.tiktok.com/ZSuW3mdua/",challenge:3},
-  {email:"mrosariovaldez55@gmail.com",name:"María Rosario Valdez",handle:"TT_rosariomaria1716",url:"https://www.instagram.com/reel/DWPmcxbjsSk/",challenge:3},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",url:"https://vt.tiktok.com/ZSuvHk3Qr/",challenge:3},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.tiktok.com/t/ZTkRjM3Ha/",challenge:3},
-  {email:"berevoice13ugc@gmail.com",name:"Berenice Ramos H",handle:"Berevoice13",url:"https://vt.tiktok.com/ZSucnBsK9/",challenge:3},
-  {email:"itstianale@gmail.com",name:"Tiana Le",handle:"Itstianale",url:"https://www.tiktok.com/t/ZP8bXtBvX/",challenge:3},
-  {email:"luciabracamonte11@gmail.com",name:"Isabella Bracamonte",handle:"TT_IsabellaBracamonte",url:"https://www.tiktok.com/t/ZTkdaRsua/",challenge:3},
-  {email:"fatimaescobar73@gmail.com",name:"Fatima Duarte",handle:"TT_fatimaescobar77",url:"https://www.tiktok.com/t/ZP8bCdVMp/",challenge:3},
-  {email:"chezzlaura.collab@gmail.com",name:"Laura Larivoir",handle:"tt_chezzlaura",url:"https://vt.tiktok.com/ZSuvXAUoT/",challenge:3},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"TT_natwolfo",url:"https://www.tiktok.com/t/ZTkRkDoSQ/",challenge:3},
-  {email:"contact.nataliawolf@gmail.com",name:"Natalia Aguilar",handle:"TT_natwolfo",url:"https://www.instagram.com/reel/DWSd2BIOx4A/",challenge:3},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Tt_Jemirasan",url:"https://www.instagram.com/reel/DWRSGFfDh0t/",challenge:3},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.tiktok.com/@gens.archive/video/7620681047608544525",challenge:3},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.instagram.com/reel/DWQS1x1CjPP/",challenge:3},
-];
-const CH4_SUBMISSIONS = [
-  {email:"katedove1@icloud.com",name:"Kate Dove",handle:"thekatedove",url:"https://www.instagram.com/reel/DWg-3EghWZ9/",challenge:4},
-  {email:"askmims1@gmail.com",name:"Mimi Wong",handle:"askmims",url:"https://www.instagram.com/reel/DWeDmAzETCM/",challenge:4},
-  {email:"ramirezjeccira@gmail.com",name:"Jeccira Ramirez Sanchez",handle:"Jemirasan",url:"https://vt.tiktok.com/ZSHLmyNMT/",challenge:4},
-  {email:"vazquezz.m1407@gmail.com",name:"Maite Vazquez Enriquez",handle:"Maitev021",url:"https://vt.tiktok.com/ZSHFPDpp8/",challenge:4},
-  {email:"makeupbyalissaskye@gmail.com",name:"Alissa Ramos-Waldron",handle:"Alissaskyee",url:"https://www.instagram.com/reel/DWkKoXKjr8g/",challenge:4},
-  {email:"whtevrxgen@gmail.com",name:"Chin Malabanan",handle:"gens.archive",url:"https://www.instagram.com/reel/DWmyWjVkpzI/",challenge:4},
-  {email:"mrosariovaldez55@gmail.com",name:"Maria Rosario Valdez",handle:"TT_rosariomaria1716",url:"https://vt.tiktok.com/ZSH6hkWqo/",challenge:4},
-];
-const ALL_APPLICANTS_BASE = [...CH1_APPLICANTS,...CH2_APPLICANTS,...CH3_APPLICANTS,...CH4_APPLICANTS];
-const ALL_SUBMISSIONS_BASE = [...CH1_SUBMISSIONS,...CH2_SUBMISSIONS,...CH3_SUBMISSIONS,...CH4_SUBMISSIONS];
-const GSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXENsmny17_cl8EEsokPXcOEQ7o6tNEEjKkPZBbGziQou1gO5eygQ5ayqfGHJLjRpiuPdjfcGOPscC/pub?gid=0&single=true&output=csv";
+const CHANNELS = {
+  discord:{name:'Discord',icon:'discord',color:'#4cb8ff'},
+  nurilounge:{name:'Nurilounge Campaign',icon:'nurilounge',color:'#30d158'},
+  roster:{name:'Nurilounge Roster',icon:'roster',color:'#bf5af2'},
+  ugc:{name:'UGC',icon:'ugc',color:'#ff9f0a'}
+};
 
-let applicants = [...ALL_APPLICANTS_BASE, ...(JSON.parse(localStorage.getItem('ng_extra_applicants')||'[]'))];
-let submissions = [...ALL_SUBMISSIONS_BASE, ...(JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]'))];
-let selectedChallenge = 'all';
-let challengeMemos = JSON.parse(localStorage.getItem('ng_memos')||'{}');
-let applicantCounts = JSON.parse(localStorage.getItem('ng_applicant_counts')||'{}');
-let customChallenges = JSON.parse(localStorage.getItem('ng_custom_challenges')||'[]');
-let bestContents = JSON.parse(localStorage.getItem('ng_best')||'[]');
+let data = JSON.parse(localStorage.getItem('ca_v2')||'{"discord":[],"nurilounge":[],"roster":[],"ugc":[]}');
+['discord','nurilounge','roster','ugc'].forEach(ch=>{ if(!data[ch]) data[ch]=[]; });
 
-const ne = id => document.getElementById(id);
-const norm = e => (e||'').toLowerCase().trim();
+function save(){ localStorage.setItem('ca_v2',JSON.stringify(data)); }
 
-function getChallengeNums() {
-  const fromData = [...new Set([...applicants,...submissions].map(s=>s.challenge))].filter(Boolean);
-  return [...new Set([...fromData,...customChallenges])].sort((a,b)=>a-b);
-}
-function getApplicants(cn) {
-  return cn==='all' ? applicants : applicants.filter(a=>a.challenge==cn);
-}
-function getSubmitted(cn) {
-  const src = cn==='all' ? submissions : submissions.filter(s=>s.challenge==cn);
-  const seen=new Set(), res=[];
-  src.forEach(s=>{ const k=norm(s.email)+'|'+s.challenge; if(!seen.has(k)){ seen.add(k); res.push(s); } });
-  return res;
-}
-function getMissing(cn) {
-  const apps = getApplicants(cn);
-  const subEmails = new Set((cn==='all'?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
-  return apps.filter(a=>!subEmails.has(norm(a.email)));
-}
-function maskEmail(email) {
-  if(!email) return '';
-  const at=email.indexOf('@'); if(at<=0) return email;
-  const local=email.substring(0,at), domain=email.substring(at);
-  return local[0]+'****'+(local.length>2?local[local.length-1]:'')+domain;
-}
+let currentBranch='all', editCh=null, editIdx=null;
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 
-function showPage(name) {
-  ['overview','submitted','missing','discord'].forEach(p=>{
-    const pg=ne('page-'+p); if(pg) pg.classList.toggle('active',p===name);
-    const nav=ne('nav-'+p); if(nav) nav.classList.toggle('active',p===name);
+// PAGE
+function showPage(name){
+  ['overview','discord','nurilounge','roster','ugc'].forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    const nav=document.getElementById('nav-'+p);
+    if(el) el.classList.toggle('active',p===name);
+    if(nav) nav.classList.toggle('active',p===name);
   });
-  if(name==='submitted') renderSubmitted();
-  if(name==='missing') renderMissing();
-  if(name==='discord') generateDiscord();
-  if(name==='overview') { renderBest(); renderToggles(); }
+  if(name==='overview') { renderOverview(); renderOvCal(); }
+  
+  if(name==='discord'||name==='nurilounge'||name==='roster'||name==='ugc') renderList(name);
 }
 
-function renderToggles() {
-  const nums = getChallengeNums();
-  ['ov-toggles','sub-toggles','miss-toggles'].forEach(id=>{
-    const el=ne(id); if(!el) return;
-    el.innerHTML = '<button class="ch-btn '+(selectedChallenge==='all'?'active':'')+'" onclick="setChallenge(\'all\')">전체</button>'
-      + nums.map(n=>'<button class="ch-btn '+(selectedChallenge==n?'active':'')+'" onclick="setChallenge('+n+')">챌린지 '+n+'</button>').join('');
-  });
-  const ds=ne('discord-ch');
-  if(ds){
-    const cur=ds.value;
-    ds.innerHTML='<option value="all">전체 챌린지</option>'+nums.map(n=>'<option value="'+n+'">챌린지 '+n+'</option>').join('');
-    ds.value=cur;
-  }
+// BRANCH
+function setBranchFilter(b,btn){
+  currentBranch=b;
+  document.querySelectorAll('.branch-btn').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  renderOverview();
 }
 
-function setChallenge(cn) {
-  selectedChallenge=cn; renderToggles(); updateMetrics(); renderSubmitted(); renderMissing(); generateDiscord();
+function branchBadge(b){
+  if(!b) return '';
+  const cls=b==='Global'?'badge-blue':b==='US'?'badge-green':'badge-orange';
+  return `<span class="badge ${cls}" style="font-size:10px">${b}</span>`;
 }
 
-function updateMetrics() {
-  const cn=selectedChallenge;
-  const apps=getApplicants(cn);
-  const subEmails=new Set((cn==='all'?submissions:submissions.filter(s=>s.challenge==cn)).map(s=>norm(s.email)));
-  const submitted=apps.filter(a=>subEmails.has(norm(a.email))).length;
-  const missing=Math.max(0, apps.length-submitted);
-  const rate=apps.length?Math.round(submitted/apps.length*100):0;
-  ne('m-total').textContent=apps.length;
-  ne('m-submitted').textContent=submitted;
-  ne('m-missing').textContent=missing;
-  ne('m-rate').textContent=rate+'%';
-  ne('nav-sub-count').textContent=submitted;
-  ne('nav-miss-count').textContent=missing;
-  const nums=getChallengeNums();
-  ne('challenge-summary').innerHTML=nums.map(n=>{
-    const a2=applicants.filter(a=>a.challenge==n);
-    const se=new Set(submissions.filter(s=>s.challenge==n).map(s=>norm(s.email)));
-    // 신청자 있으면 매칭, 없으면 submission 고유 이메일 수로 대체
-    const sc = a2.length > 0
-      ? a2.filter(a=>se.has(norm(a.email))).length
-      : se.size;
-    const manual=applicantCounts[n];
-    const dc=manual!==undefined?manual:(a2.length>0?a2.length:se.size);
-    const mc=dc-sc;
-    const r=dc>0?Math.round(sc/dc*100):0;
-    const memo=challengeMemos[n]||'';
-    return '<tr>'
-      +'<td><span class="badge badge-blue">챌린지 '+n+'</span></td>'
-      +'<td><span onclick="editCount('+n+',this)" style="cursor:pointer;padding:2px 8px;border-radius:4px;background:#f0eeea;font-size:12px;font-family:DM Mono,monospace">'+dc+'</span></td>'
-      +'<td style="color:#2d8a4e;font-weight:500">'+sc+'</td>'
-      +'<td style="color:#ff6b9d;font-weight:500">'+mc+'</td>'
-      +'<td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:'+r+'%"></div></div><span class="prog-pct">'+r+'%</span></div></td>'
-      +'<td><div class="memo-cell" onclick="editMemo('+n+',this)">'+(memo?'<span class="memo-text">'+memo+'</span>':'<span class="memo-placeholder">+ 메모 추가</span>')+'</div></td>'
-      +'</tr>';
+// OVERVIEW
+function renderOverview(){
+  updateBadges();
+  const g=document.getElementById('overview-grid');
+  const chs=['discord','nurilounge','roster','ugc'];
+  const chColors={'discord':'rgba(10,132,255,0.15)','nurilounge':'rgba(48,209,88,0.15)','roster':'rgba(191,90,242,0.15)','ugc':'rgba(255,159,10,0.15)'};
+  const chTxtColors={'discord':'#4cb8ff','nurilounge':'#30d158','roster':'#bf5af2','ugc':'#ff9f0a'};
+
+  g.innerHTML = chs.map(ch=>{
+    const camps=data[ch].filter(c=>currentBranch==='all'||c.branch===currentBranch);
+    const isDisc=ch==='discord';
+    const totalA=camps.reduce((s,c)=>s+(parseInt(c.applicants)||0),0);
+    const totalC=camps.reduce((s,c)=>s+(isDisc?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
+    const totalD=camps.reduce((s,c)=>s+(parseInt(c.dropped)||0),0);
+    const rate=totalA>0?Math.round(totalC/totalA*100):0;
+    const branches=[...new Set(camps.map(c=>c.branch).filter(Boolean))];
+    const col=chTxtColors[ch];
+
+    return `<div class="channel-card" onclick="showPage('${ch}')">
+      <div class="ch-icon" style="background:${chColors[ch]};color:${col};font-size:20px">
+        ${ch==='discord'?'◈':ch==='nurilounge'?'⬡':ch==='roster'?'⬟':'▶'}
+      </div>
+      <div class="ch-name">${CHANNELS[ch].name}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+        ${branches.map(b=>branchBadge(b)).join('')}
+        <span class="badge badge-gray" style="font-size:10px">${camps.length}개 운영 중</span>
+      </div>
+      <div class="ch-stats">
+        <div class="stat-box">
+          <div class="ch-stat-label">신청자</div>
+          <div class="ch-stat-value" style="color:${col}">${totalA.toLocaleString()}</div>
+        </div>
+        <div class="stat-box">
+          <div class="ch-stat-label">${isDisc?'제출':'완료'}</div>
+          <div class="ch-stat-value" style="color:#30d158">${totalC.toLocaleString()}</div>
+        </div>
+        <div class="stat-box">
+          <div class="ch-stat-label">${isDisc?'제출률':'완료율'}</div>
+          <div class="ch-stat-value" style="color:#ff9f0a">${rate}%</div>
+        </div>
+      </div>
+      ${(()=>{
+        const urls=[];
+        camps.forEach(c=>{
+          if((ch==='nurilounge'||ch==='roster')&&c.reportUrl)
+            urls.push({label:'Report',url:c.reportUrl,name:c.name});
+          if(ch==='ugc'&&c.folderUrl)
+            urls.push({label:'폴더',url:c.folderUrl,name:c.name});
+        });
+        if(!urls.length) return '';
+        return '<div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:6px">'
+          +urls.map(u=>'<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:8px;border:0.5px solid var(--border)">'
+            +'<span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;flex-shrink:0">'+u.label+'</span>'
+            +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+u.name+'</span>'
+            +'<a href="'+u.url+'" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:5px 10px" onclick="event.stopPropagation()">열기 →</a>'
+            +'</div>').join('')
+          +'</div>';
+      })()}
+    </div>`;
   }).join('');
 }
 
-function editCount(n, span) {
-  const cur=applicantCounts[n]!==undefined?applicantCounts[n]:span.textContent.trim();
-  const input=document.createElement('input');
-  input.type='number'; input.value=cur; input.min=0;
-  input.style.cssText='width:60px;font-size:12px;padding:2px 6px;border-radius:4px;border:1px solid #5865f2;background:#fff;font-family:DM Mono,monospace;text-align:center';
-  span.replaceWith(input); input.focus(); input.select();
-  function save(){ const v=parseInt(input.value); if(!isNaN(v)&&v>=0){ applicantCounts[n]=v; localStorage.setItem('ng_applicant_counts',JSON.stringify(applicantCounts)); } updateMetrics(); }
-  input.addEventListener('blur',save);
-  input.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key==='Escape') input.blur(); });
-}
+function ovCalPrev(){ ovCalMonth--; if(ovCalMonth<0){ovCalMonth=11;ovCalYear--;} renderOvCal(); }
+function ovCalNext(){ ovCalMonth++; if(ovCalMonth>11){ovCalMonth=0;ovCalYear++;} renderOvCal(); }
 
-function editMemo(n, cell) {
-  const cur=challengeMemos[n]||'';
-  const input=document.createElement('textarea');
-  input.value=cur; input.style.cssText='width:100%;min-height:60px;font-size:12px;padding:6px;border-radius:6px;border:1px solid #5865f2;background:#fff;font-family:DM Sans,sans-serif;resize:vertical;outline:none';
-  cell.innerHTML=''; cell.appendChild(input); input.focus();
-  function save(){ challengeMemos[n]=input.value.trim(); localStorage.setItem('ng_memos',JSON.stringify(challengeMemos)); updateMetrics(); }
-  input.addEventListener('blur',save);
-  input.addEventListener('keydown',e=>{ if(e.key==='Escape') save(); });
-}
+let ovCalYear=new Date().getFullYear(), ovCalMonth=new Date().getMonth();
 
-function addChallenge() {
-  const nums=getChallengeNums();
-  const next=nums.length>0?Math.max(...nums)+1:1;
-  if(!customChallenges.includes(next)){ customChallenges.push(next); localStorage.setItem('ng_custom_challenges',JSON.stringify(customChallenges)); }
-  renderToggles(); updateMetrics();
-}
-function removeChallenge() {
-  const nums=getChallengeNums(); if(!nums.length) return;
-  const last=Math.max(...nums);
-  if([...applicants,...submissions].some(s=>s.challenge===last)){ alert('챌린지 '+last+'에 데이터가 있어서 삭제할 수 없어요.'); return; }
-  customChallenges=customChallenges.filter(c=>c!==last);
-  localStorage.setItem('ng_custom_challenges',JSON.stringify(customChallenges));
-  if(selectedChallenge==last) selectedChallenge='all';
-  renderToggles(); updateMetrics();
-}
+function renderOvCal(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const titleEl=document.getElementById('ov-cal-title');
+  if(titleEl) titleEl.textContent=months[ovCalMonth]+' '+ovCalYear;
 
-function renderSubmitted() {
-  const cn=selectedChallenge, q=norm(ne('search-sub').value);
-  let rows=getSubmitted(cn);
-  if(q) rows=rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
-  if(!rows.length){ ne('submitted-table').innerHTML='<tr><td colspan="7" class="empty">결과 없음</td></tr>'; return; }
-  ne('submitted-table').innerHTML=rows.map((r,i)=>{
-    const allUrls=submissions.filter(s=>norm(s.email)===norm(r.email)&&s.challenge===r.challenge).map(s=>s.url);
-    const url2=allUrls.length>1?allUrls[1]:null;
-    return '<tr>'
-      +'<td style="color:#9a9aac;font-size:11px">'+(i+1)+'</td>'
-      +'<td style="font-weight:500">'+(r.name||'-')+'</td>'
-      +'<td><span class="tag">@'+(r.handle||'-')+'</span></td>'
-      +'<td style="color:#5a5a72;font-size:12px">'+(r.email||'-')+'</td>'
-      +'<td><span class="badge badge-blue">챌린지 '+r.challenge+'</span></td>'
-      +'<td><a class="link" href="'+r.url+'" target="_blank">🔗 링크1</a></td>'
-      +'<td>'+(url2?'<a class="link" href="'+url2+'" target="_blank">🔗 링크2</a>':'-')+'</td>'
-      +'</tr>';
-  }).join('');
-}
+  const firstDay=new Date(ovCalYear,ovCalMonth,1).getDay();
+  const lastDate=new Date(ovCalYear,ovCalMonth+1,0).getDate();
+  const today=new Date();
 
-function renderMissing() {
-  const cn=selectedChallenge, q=norm(ne('search-miss').value);
-  let rows=getMissing(cn);
-  if(q) rows=rows.filter(r=>norm(r.name).includes(q)||norm(r.email).includes(q)||norm(r.handle).includes(q));
-  if(!rows.length){ ne('missing-table').innerHTML='<tr><td colspan="6" class="empty">미제출자 없음 🎉</td></tr>'; return; }
-  ne('missing-table').innerHTML=rows.map((r,i)=>
-    '<tr>'
-    +'<td style="color:#9a9aac;font-size:11px">'+(i+1)+'</td>'
-    +'<td style="font-weight:500">'+(r.name||'-')+'</td>'
-    +'<td><span class="tag">@'+(r.handle||'-')+'</span></td>'
-    +'<td style="color:#5a5a72;font-size:12px">'+(r.email||'-')+'</td>'
-    +'<td style="font-size:12px;color:#9a9aac">'+(r.country||'-')+'</td>'
-    +'<td><span class="badge badge-red">챌린지 '+r.challenge+'</span></td>'
-    +'</tr>'
-  ).join('');
-}
+  const events=[];
+  ['discord','nurilounge','roster','ugc'].forEach(ch=>{
+    data[ch].forEach(c=>{
+      const p=parsePeriod(c.period);
+      if(p) events.push({name:c.name,start:p.start,end:p.end,ch});
+    });
+  });
 
-function copyMissing() {
-  const rows=getMissing(selectedChallenge);
-  const text=rows.map(r=>r.name+'\t@'+r.handle+'\t'+r.email+'\t'+(r.country||'')).join('\n');
-  navigator.clipboard.writeText(text).then(()=>{ const b=event.currentTarget; b.textContent='✅ 복사됨!'; setTimeout(()=>b.textContent='📋 목록 복사',2000); });
-}
-
-function generateDiscord() {
-  const cn=ne('discord-ch').value, type=ne('discord-type').value;
-  const missing=getMissing(cn==='all'?'all':parseInt(cn));
-  const label=cn==='all'?'전체 챌린지':'챌린지 No.'+cn;
-  let msg='';
-  if(type==='reminder'){
-    msg='📣 **['+label+' 마감 리마인더]**\n\n현재 **'+missing.length+'명**이 미제출 상태입니다.\n\n';
-    if(missing.length){ msg+='미제출자 목록:\n'; missing.forEach(m=>{ msg+='• '+m.name+' (@'+(m.handle||m.email)+')\n'; }); }
-    msg+='\n⏰ 제출 링크: [링크를 입력하세요]';
-  } else {
-    msg='⚠️ **['+label+' 미제출 안내]**\n\n빠른 제출 부탁드립니다! 🙏\n\n';
-    if(!missing.length) msg+='✅ 모든 참가자가 제출 완료하였습니다!\n';
-    else missing.forEach(m=>{ msg+='• **'+m.name+'** — @'+(m.handle||'')+' ('+maskEmail(m.email)+')\n'; });
-    msg+='\n📎 제출 폼: [링크를 입력하세요]';
+  const prevDays=new Date(ovCalYear,ovCalMonth,0).getDate();
+  let cells='';
+  for(let i=0;i<firstDay;i++){
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${prevDays-firstDay+1+i}</div></div>`;
   }
-  ne('discord-preview').textContent=msg;
-}
-
-function copyDiscord() {
-  navigator.clipboard.writeText(ne('discord-preview').textContent).then(()=>{ const b=event.currentTarget; b.textContent='✅ 복사됨!'; setTimeout(()=>b.textContent='📋 복사하기',2000); });
-}
-
-function saveBest(){ localStorage.setItem('ng_best',JSON.stringify(bestContents)); }
-function toggleBestForm(){
-  const f=ne('best-form'), b=ne('best-form-btn');
-  const open=f.style.display!=='none';
-  f.style.display=open?'none':'block';
-  b.textContent=open?'➕ 추가':'✕ 닫기';
-  if(!open) ne('best-name').focus();
-}
-function addBest(){
-  const name=ne('best-name').value.trim(), url=ne('best-url').value.trim();
-  const challenge=parseInt(ne('best-challenge').value), memo=ne('best-memo').value.trim();
-  if(!name||!url){ alert('이름과 URL을 입력해주세요.'); return; }
-  bestContents.unshift({id:Date.now(),name,url,challenge,memo,quality:0,interaction:0});
-  saveBest();
-  ne('best-name').value=''; ne('best-url').value=''; ne('best-memo').value='';
-  ne('best-form').style.display='none'; ne('best-form-btn').textContent='➕ 추가';
-  renderBest();
-}
-function setRating(id,field,val){
-  const item=bestContents.find(b=>b.id===id); if(!item) return;
-  item[field]=item[field]===val?0:val; saveBest(); renderBest();
-}
-function updateBestMemo(id,val){ const item=bestContents.find(b=>b.id===id); if(item){ item.memo=val; saveBest(); } }
-function deleteBest(id){ bestContents=bestContents.filter(b=>b.id!==id); saveBest(); renderBest(); }
-function editBest(id){
-  const item=bestContents.find(b=>b.id===id); if(!item) return;
-  const o=document.createElement('div');
-  o.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
-  const makeOpt=(v,label)=>'<option value="'+v+'"'+(item.challenge==v?' selected':'')+'>'+label+'</option>';
-  o.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;width:460px;max-width:90vw">'
-    +'<div style="font-size:15px;font-weight:500;margin-bottom:16px">콘텐츠 수정</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'
-    +'<div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">이름</label><input id="e-name" value="'+item.name+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
-    +'<div><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">챌린지</label><select id="e-ch" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit">'+[1,2,3,4,5,6].map(v=>makeOpt(v,'챌린지 '+v)).join('')+'</select></div>'
-    +'</div>'
-    +'<div style="margin-bottom:10px"><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">URL</label><input id="e-url" value="'+item.url+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
-    +'<div style="margin-bottom:18px"><label style="font-size:11px;color:#9a9aac;display:block;margin-bottom:4px">메모</label><input id="e-memo" value="'+(item.memo||'')+'" style="width:100%;padding:7px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);font-size:13px;font-family:inherit"></div>'
-    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
-    +'<button id="e-cancel" style="padding:7px 16px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:#fff;cursor:pointer;font-family:inherit">취소</button>'
-    +'<button id="e-save" style="padding:7px 16px;border-radius:8px;border:none;background:#dbeafe;color:#1d4ed8;font-weight:500;cursor:pointer;font-family:inherit">저장</button>'
-    +'</div></div>';
-  document.body.appendChild(o);
-  document.getElementById('e-cancel').onclick=()=>o.remove();
-  o.onclick=e=>{ if(e.target===o) o.remove(); };
-  document.getElementById('e-save').onclick=()=>{
-    item.name=document.getElementById('e-name').value.trim()||item.name;
-    item.url=document.getElementById('e-url').value.trim()||item.url;
-    item.challenge=parseInt(document.getElementById('e-ch').value);
-    item.memo=document.getElementById('e-memo').value.trim();
-    saveBest(); renderBest(); o.remove();
-  };
-}
-
-function renderBestFilterToggles(){
-  const el=ne('best-filter-toggles'); if(!el) return;
-  const nums=[...new Set(bestContents.map(b=>b.challenge))].sort((a,b)=>a-b);
-  const cur=el.dataset.selected||'all';
-  el.innerHTML='<button class="ch-btn '+(cur==='all'?'active':'')+'" onclick="setBestFilter(\'all\')">전체</button>'
-    +nums.map(n=>'<button class="ch-btn '+(cur==n?'active':'')+'" onclick="setBestFilter('+n+')">챌린지 '+n+'</button>').join('');
-}
-function setBestFilter(val){ const el=ne('best-filter-toggles'); if(el) el.dataset.selected=val; renderBest(); }
-function renderBest(){
-  renderBestFilterToggles();
-  const el=ne('best-filter-toggles');
-  const filterCh=el?(el.dataset.selected||'all'):'all';
-  const q=(ne('best-search')?ne('best-search').value:'').toLowerCase();
-  let items=bestContents;
-  if(filterCh!=='all') items=items.filter(b=>b.challenge==filterCh);
-  if(q) items=items.filter(b=>b.name.toLowerCase().includes(q)||(b.memo||'').toLowerCase().includes(q));
-  const grid=ne('best-grid'); if(!grid) return;
-  if(!items.length){ grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#9a9aac;font-size:13px">아직 추가된 콘텐츠가 없어요.</div>'; return; }
-  function stars(id,field,val){ return [1,2,3,4,5].map(i=>'<span class="star" onclick="setRating('+id+',\''+field+'\','+i+')" style="color:'+(i<=(val||0)?'#f5a623':'#e8e6e0')+'">★</span>').join(''); }
-  function pb(url){ if(url.includes('tiktok')) return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,0.06);color:#5a5a72">TikTok</span>'; if(url.includes('instagram')) return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(214,41,118,0.1);color:#d62976">Instagram</span>'; return '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:#f0eeea;color:#5a5a72">Link</span>'; }
-  grid.innerHTML=items.map(b=>
-    '<div class="best-card">'
-    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
-    +'<div><div style="font-size:14px;font-weight:500;margin-bottom:5px">'+b.name+'</div>'
-    +'<div style="display:flex;gap:6px"><span class="badge badge-blue" style="font-size:10px">챌린지 '+b.challenge+'</span>'+pb(b.url)+'</div></div>'
-    +'<div style="display:flex;gap:4px;flex-shrink:0">'
-    +'<a href="'+b.url+'" target="_blank" class="btn accent" style="font-size:11px;padding:5px 10px;text-decoration:none">🔗</a>'
-    +'<button onclick="editBest('+b.id+')" class="btn" style="font-size:11px;padding:5px 10px">✏️</button>'
-    +'<button onclick="deleteBest('+b.id+')" class="btn" style="font-size:11px;padding:5px 10px;color:#ff6b9d">✕</button>'
-    +'</div></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-    +'<div style="background:#f4f3ef;border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#9a9aac;text-transform:uppercase;margin-bottom:4px">퀄리티</div><div>'+stars(b.id,'quality',b.quality)+'</div></div>'
-    +'<div style="background:#f4f3ef;border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:#9a9aac;text-transform:uppercase;margin-bottom:4px">인터랙션</div><div>'+stars(b.id,'interaction',b.interaction)+'</div></div>'
-    +'</div>'
-    +'<input type="text" value="'+(b.memo||'').replace(/"/g,"&quot;")+'" placeholder="메모 입력..." onchange="updateBestMemo('+b.id+',this.value)" style="width:100%;font-size:12px;padding:6px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.1);background:#f4f3ef;font-family:inherit;outline:none">'
-    +'</div>'
-  ).join('');
-}
-
-function parseCSVLine(line){
-  const result=[]; let cur='',inQuote=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch==='"'){ if(inQuote&&line[i+1]==='"'){ cur+='"'; i++; } else inQuote=!inQuote; }
-    else if(ch===','&&!inQuote){ result.push(cur); cur=''; }
-    else cur+=ch;
+  for(let d=1;d<=lastDate;d++){
+    const date=new Date(ovCalYear,ovCalMonth,d);
+    const isToday=today.getFullYear()===ovCalYear&&today.getMonth()===ovCalMonth&&today.getDate()===d;
+    const dayEvents=events.filter(e=>date>=e.start&&date<=e.end);
+    const evHTML=dayEvents.slice(0,2).map(e=>`<div class="cal-event ${e.ch}" title="${e.name}">${e.name}</div>`).join('');
+    const more=dayEvents.length>2?`<div style="font-size:9px;color:var(--text3);padding:1px 4px">+${dayEvents.length-2}</div>`:'';
+    cells+=`<div class="cal-day${isToday?' today':''}"><div class="cal-day-num">${d}</div>${evHTML}${more}</div>`;
   }
-  result.push(cur); return result;
+  const rem=(7-((firstDay+lastDate)%7))%7;
+  for(let d=1;d<=rem;d++){
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  const grid=document.getElementById('ov-cal-grid');
+  if(!grid) return;
+  const headers=Array.from(grid.children).slice(0,7);
+  grid.innerHTML='';
+  headers.forEach(h=>grid.appendChild(h));
+  grid.insertAdjacentHTML('beforeend',cells);
 }
 
-async function syncFromSheet(){
-  const btn=ne('sync-btn'), status=ne('sync-status');
+function updateBadges(){
+  ['discord','nurilounge','roster','ugc'].forEach(ch=>{
+    const el=document.getElementById('nb-'+ch);
+    if(el) el.textContent=data[ch].length;
+  });
+}
+
+// CALENDAR
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function parsePeriod(periodStr){
+  if(!periodStr) return null;
+  // "2026.01 ~ 2026.03" or "2026-01-14 ~ 2026-02-08"
+  const parts=periodStr.split(/[~\-–]/);
+  if(parts.length<2) return null;
   try{
-    btn.textContent='⏳ 동기화 중...'; btn.disabled=true; status.textContent='';
-    const res=await fetch(GSHEET_CSV_URL);
-    if(!res.ok) throw new Error('CSV 불러오기 실패 ('+res.status+')');
-    const text=await res.text();
-    const lines=text.trim().split('\n');
-    const delim=(lines[0]||'').includes('\t')?'\t':',';
-    const existingKeys=new Set(submissions.map(s=>norm(s.email)+'|'+s.challenge+'|'+(s.url||'')));
-    let added=0, skipped=0;
-    const newSubs=[];
-    for(let i=1;i<lines.length;i++){
-      const cols=delim==='\t'?lines[i].split('\t'):parseCSVLine(lines[i]);
-      if(cols.length<9) continue;
-      const email=norm(cols[5]||''), name=(cols[4]||'').trim(), handle=(cols[2]||'').trim();
-      const url1=(cols[6]||'').trim(), url2=(cols[7]||'').trim();
-      const challenge=parseInt((cols[8]||'').replace(/[^0-9]/g,''));
-      if(!email||!url1||isNaN(challenge)||challenge<1) continue;
-      const k1=email+'|'+challenge+'|'+url1;
-      if(!existingKeys.has(k1)){ existingKeys.add(k1); newSubs.push({email,name,handle,url:url1,challenge}); added++; } else skipped++;
-      if(url2&&url2.startsWith('http')){ const k2=email+'|'+challenge+'|'+url2; if(!existingKeys.has(k2)){ existingKeys.add(k2); newSubs.push({email,name,handle,url:url2,challenge}); } }
-    }
-    if(newSubs.length){
-      submissions.push(...newSubs);
-      const prev=JSON.parse(localStorage.getItem('ng_extra_submissions')||'[]');
-      localStorage.setItem('ng_extra_submissions',JSON.stringify([...prev,...newSubs]));
-    }
-    renderToggles(); updateMetrics(); renderSubmitted(); renderMissing(); generateDiscord(); renderBest();
-    const now=new Date().toLocaleTimeString('ko-KR');
-    status.innerHTML='<span style="color:#2d8a4e">✅ '+now+' — 신규 '+added+'건</span>'+(skipped?' <span style="color:#9a9aac">('+skipped+'건 중복)</span>':'');
-  } catch(e){
-    status.innerHTML='<span style="color:#ff6b9d">❌ '+e.message+'</span>';
-  } finally{
-    btn.textContent='🔄 시트 동기화'; btn.disabled=false;
-  }
+    const s=parts[0].trim().replace(/\./g,'-');
+    const e=parts[parts.length-1].trim().replace(/\./g,'-');
+    const sd=new Date(s.length===7?s+'-01':s);
+    const ed=new Date(e.length===7?e+'-28':e);
+    if(isNaN(sd)||isNaN(ed)) return null;
+    return {start:sd,end:ed};
+  }catch(e){return null;}
 }
 
-renderToggles();
-updateMetrics();
-generateDiscord();
-renderBest();
+function renderCalendar(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent=months[calMonth]+' '+calYear;
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const lastDate=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+
+  // collect events
+  const events=[];
+  ['discord','nurilounge','roster','ugc'].forEach(ch=>{
+    data[ch].forEach(c=>{
+      const p=parsePeriod(c.period);
+      if(p) events.push({name:c.name,start:p.start,end:p.end,ch});
+    });
+  });
+
+  let cells='';
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  for(let i=0;i<firstDay;i++){
+    const d=prevDays-firstDay+1+i;
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+  for(let d=1;d<=lastDate;d++){
+    const date=new Date(calYear,calMonth,d);
+    const isToday=today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const dayEvents=events.filter(e=>date>=e.start&&date<=e.end);
+    const evHTML=dayEvents.slice(0,3).map(e=>`<div class="cal-event ${e.ch}" title="${e.name}">${e.name}</div>`).join('');
+    const more=dayEvents.length>3?`<div style="font-size:9px;color:var(--text3);padding:1px 4px">+${dayEvents.length-3}개</div>`:'';
+    cells+=`<div class="cal-day${isToday?' today':''}">
+      <div class="cal-day-num">${d}</div>
+      ${evHTML}${more}
+    </div>`;
+  }
+  const remaining=(7-((firstDay+lastDate)%7))%7;
+  for(let d=1;d<=remaining;d++){
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  // cal-cells is inside the grid, but we need to update all cells
+  const calGrid=document.querySelector('.cal-grid');
+  // remove old day cells (keep DOW headers = first 7)
+  const headers=Array.from(calGrid.children).slice(0,7);
+  calGrid.innerHTML='';
+  headers.forEach(h=>calGrid.appendChild(h));
+  calGrid.insertAdjacentHTML('beforeend',cells);
+}
+
+// LIST
+function renderList(ch){
+  const container=document.getElementById(ch+'-list');
+  const camps=data[ch];
+  if(!camps.length){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">캠페인 없음</div><div style="font-size:12px">위 버튼으로 추가해보세요</div></div>`;
+    return;
+  }
+  const isD=ch==='discord',isU=ch==='ugc',hasR=ch==='nurilounge'||ch==='roster';
+  container.innerHTML=camps.map((c,i)=>{
+    const a=parseInt(c.applicants)||0,cm=parseInt(c.completed)||0,sub=parseInt(c.submitted)||0,dr=parseInt(c.dropped)||0,pd=parseInt(c.paid)||0;
+    const rate=isD?(a>0?Math.round(sub/a*100):0):(a>0?Math.round(cm/a*100):0);
+
+    const stats=isD?`
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">제출자</div><div class="stat-value" style="color:#30d158">${sub.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">미제출</div><div class="stat-value" style="color:#ff453a">${Math.max(0,a-sub).toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">제출률</div><div class="stat-value" style="color:#ff9f0a">${rate}%</div></div>
+      </div>`:isU?`
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">수급 완료</div><div class="stat-value" style="color:#30d158">${cm.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">Paid</div><div class="stat-value" style="color:#ff9f0a">${pd.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">드롭</div><div class="stat-value" style="color:#ff453a">${dr.toLocaleString()}</div></div>
+      </div>`:`
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">완료</div><div class="stat-value" style="color:#30d158">${cm.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">드롭</div><div class="stat-value" style="color:#ff453a">${dr.toLocaleString()}</div></div>
+        <div class="stat-box"><div class="stat-label">완료율</div><div class="stat-value" style="color:#ff9f0a">${rate}%</div></div>
+      </div>`;
+
+    return `<div class="campaign-item">
+      <div class="ci-header">
+        <div style="flex:1;min-width:0">
+          <div class="ci-title">${c.name||'(이름 없음)'}</div>
+          <div class="ci-meta">
+            ${c.branch?branchBadge(c.branch):''}
+            ${c.period?`<span class="badge badge-gray" style="font-size:10px">📅 ${c.period}</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="openModal('${ch}',${i})" class="btn" style="font-size:11px;padding:5px 12px">수정</button>
+          <button onclick="delCampaign('${ch}',${i})" class="btn danger" style="font-size:11px;padding:5px 12px">삭제</button>
+        </div>
+      </div>
+      ${c.purpose?`<div class="ci-desc"><div class="ci-desc-label">오픈 목적</div>${c.purpose}</div>`:''}
+      ${c.product?`<div class="ci-desc"><div class="ci-desc-label">발송 제품</div>${c.product}</div>`:''}
+      ${stats}
+      ${hasR&&c.reportUrl?`<div class="url-box"><span class="url-label">Report</span><span class="url-text">${c.reportUrl}</span><a href="${c.reportUrl}" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:6px 14px">열기 →</a></div>`:''}
+      ${isU&&c.folderUrl?`<div class="url-box"><span class="url-label">폴더</span><span class="url-text">${c.folderUrl}</span><a href="${c.folderUrl}" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:6px 14px">열기 →</a></div>`:''}
+      ${c.memo?`<div style="font-size:12px;color:var(--text3);margin-top:10px;font-style:italic">💬 ${c.memo}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// MODAL
+function getFields(ch,c={}){
+  const isD=ch==='discord',isU=ch==='ugc',hasR=ch==='nurilounge'||ch==='roster';
+  const statFields=isD?`
+    <div class="form-row">
+      <div class="form-group"><label>신청자 수</label><input type="number" id="f-applicants" value="${c.applicants||''}" placeholder="0" min="0"></div>
+      <div class="form-group"><label>제출자 수</label><input type="number" id="f-submitted" value="${c.submitted||''}" placeholder="0" min="0"></div>
+    </div>`:isU?`
+    <div class="form-row">
+      <div class="form-group"><label>신청자 수</label><input type="number" id="f-applicants" value="${c.applicants||''}" placeholder="0" min="0"></div>
+      <div class="form-group"><label>수급 완료</label><input type="number" id="f-completed" value="${c.completed||''}" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Paid</label><input type="number" id="f-paid" value="${c.paid||''}" placeholder="0" min="0"></div>
+      <div class="form-group"><label>드롭</label><input type="number" id="f-dropped" value="${c.dropped||''}" placeholder="0" min="0"></div>
+    </div>`:`
+    <div class="form-row">
+      <div class="form-group"><label>신청자 수</label><input type="number" id="f-applicants" value="${c.applicants||''}" placeholder="0" min="0"></div>
+      <div class="form-group"><label>완료</label><input type="number" id="f-completed" value="${c.completed||''}" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>드롭</label><input type="number" id="f-dropped" value="${c.dropped||''}" placeholder="0" min="0"></div>
+      <div class="form-group"></div>
+    </div>`;
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>캠페인명 *</label><input type="text" id="f-name" value="${c.name||''}" placeholder="예: Challenge #1"></div>
+      <div class="form-group"><label>브랜치</label>
+        <select id="f-branch">
+          <option value="">선택</option>
+          <option value="Global" ${c.branch==='Global'?'selected':''}>Global</option>
+          <option value="US" ${c.branch==='US'?'selected':''}>US</option>
+          <option value="KR" ${c.branch==='KR'?'selected':''}>KR</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>기간 <span style="color:var(--text3);font-weight:400">(캘린더 표시용, 예: 2026.01 ~ 2026.03)</span></label>
+      <input type="text" id="f-period" value="${c.period||''}" placeholder="2026.01 ~ 2026.03"></div>
+    <div class="form-group"><label>오픈 목적</label><textarea id="f-purpose" placeholder="이번 캠페인의 목적...">${c.purpose||''}</textarea></div>
+    <div class="form-group"><label>발송 제품</label><textarea id="f-product" placeholder="발송 제품명 및 수량...">${c.product||''}</textarea></div>
+    <hr class="divider">
+    ${statFields}
+    ${hasR?`<div class="form-group"><label>📄 Report URL</label><input type="url" id="f-reportUrl" value="${c.reportUrl||''}" placeholder="https://..."></div>`:''}
+    ${isU?`<div class="form-group"><label>📁 폴더 URL</label><input type="url" id="f-folderUrl" value="${c.folderUrl||''}" placeholder="https://drive.google.com/..."></div>`:''}
+    <div class="form-group"><label>메모</label><input type="text" id="f-memo" value="${c.memo||''}" placeholder="기타 메모..."></div>`;
+}
+
+function openModal(ch,idx=null){
+  editCh=ch; editIdx=idx;
+  const c=idx!==null?data[ch][idx]:{};
+  document.getElementById('modal-title').textContent=idx!==null?'캠페인 수정':CHANNELS[ch].name+' — 캠페인 추가';
+  document.getElementById('modal-body').innerHTML=getFields(ch,c);
+  document.getElementById('modal-overlay').style.display='flex';
+}
+
+function saveCampaign(){
+  const ch=editCh;
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  const gn=id=>{const el=document.getElementById(id);return el?parseInt(el.value)||0:0;};
+  const c={name:g('f-name'),branch:g('f-branch'),period:g('f-period'),purpose:g('f-purpose'),product:g('f-product'),applicants:gn('f-applicants'),completed:gn('f-completed'),submitted:gn('f-submitted'),dropped:gn('f-dropped'),paid:gn('f-paid'),reportUrl:g('f-reportUrl'),folderUrl:g('f-folderUrl'),memo:g('f-memo')};
+  if(!c.name){alert('캠페인명을 입력해주세요.');return;}
+  if(editIdx!==null) data[ch][editIdx]=c;
+  else data[ch].push(c);
+  save(); closeModal(); renderList(ch); updateBadges();
+}
+
+function delCampaign(ch,idx){
+  if(!confirm('삭제할까요?')) return;
+  data[ch].splice(idx,1);
+  save(); renderList(ch); updateBadges(); renderOverview();
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').style.display='none';
+  editCh=null; editIdx=null;
+}
+
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+});
+
+// INIT
+renderOverview();
+updateBadges();
+renderCalendar();
 </script>
 </body>
 </html>
