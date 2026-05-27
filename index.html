@@ -552,8 +552,9 @@ function renderDash(){
     const content = contentCamps.reduce((s,c)=>s+(ch==='discord'?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
     const urlBtns = [];
     camps.forEach(c=>{
-      if(c.folderUrl) urlBtns.push({label:'폴더',url:c.folderUrl,name:c.name});
+      (c.urls||[]).forEach(u=>{ if(u.url) urlBtns.push({label:u.label||'링크',url:u.url,name:c.name}); });
       if((ch==='nurilounge'||ch==='roster')&&c.reportUrl) urlBtns.push({label:'Report',url:c.reportUrl,name:c.name});
+      if(!c.urls?.length&&c.folderUrl) urlBtns.push({label:'폴더',url:c.folderUrl,name:c.name});
     });
     return `<div class="ch-card" onclick="showPage('${ch}')">
       <div class="ch-icon" style="background:${info.bg};color:${info.col}">${info.icon}</div>
@@ -571,6 +572,27 @@ function renderDash(){
       }</div>`:''}
     </div>`;
   }).join('');
+}
+
+function addUrlRow(label='', url='') {
+  const container = document.getElementById('url-rows');
+  if(!container) return;
+  const idx = container.children.length;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px';
+  row.innerHTML = `
+    <input type="text" placeholder="이름 (예: 폴더, 시트...)" value="${label}" style="width:110px;flex-shrink:0;font-size:12px;padding:7px 10px" class="url-label-input">
+    <input type="url" placeholder="https://..." value="${url}" style="flex:1;font-size:12px;padding:7px 10px" class="url-url-input">
+    <button type="button" onclick="this.parentElement.remove()" class="btn danger" style="flex-shrink:0;padding:6px 10px;font-size:13px">✕</button>`;
+  container.appendChild(row);
+}
+
+function getUrlRows() {
+  const rows = document.querySelectorAll('#url-rows > div');
+  return Array.from(rows).map(row => ({
+    label: row.querySelector('.url-label-input')?.value.trim() || '',
+    url: row.querySelector('.url-url-input')?.value.trim() || ''
+  })).filter(u => u.url);
 }
 
 function updateBadges(){}
@@ -714,16 +736,16 @@ function renderList(ch){
         ${c.purpose?`<div class="ci-desc"><div class="ci-desc-lbl">오픈 목적</div>${c.purpose}</div>`:''}
         ${c.product?`<div class="ci-desc"><div class="ci-desc-lbl">발송 제품</div>${c.product}</div>`:''}
         ${stats}
-        ${c.folderUrl?`<a href="${c.folderUrl}" target="_blank" class="url-box" onclick="event.stopPropagation()">
-          <span style="font-size:18px">📁</span>
-          <span class="url-lbl">콘텐츠 폴더 열기</span>
-          <span style="font-size:16px;color:#30d158">→</span>
-        </a>`:''}
-        ${isR&&c.reportUrl?`<a href="${c.reportUrl}" target="_blank" class="url-box" onclick="event.stopPropagation()">
-          <span style="font-size:18px">📄</span>
-          <span class="url-lbl">Report 열기</span>
-          <span style="font-size:16px;color:#30d158">→</span>
-        </a>`:''}
+        ${(()=>{
+          const allUrls = [...(c.urls||[])];
+          if(isR&&c.reportUrl) allUrls.push({label:'Report',url:c.reportUrl});
+          if(!allUrls.length&&c.folderUrl) allUrls.push({label:'폴더',url:c.folderUrl});
+          return allUrls.map(u=>`<a href="${u.url}" target="_blank" class="url-box" onclick="event.stopPropagation()" style="margin-bottom:6px">
+            <span style="font-size:18px">${u.label==='Report'?'📄':u.label.includes('시트')||u.label.includes('sheet')?'📊':'📁'}</span>
+            <span class="url-lbl">${u.label||'링크'} 열기</span>
+            <span style="font-size:16px;color:#30d158">→</span>
+          </a>`).join('');
+        })()}
         ${c.memo?`<div style="font-size:12px;color:var(--text2);margin-top:8px">💬 ${c.memo}</div>`:''}
       </div>`;
     }).join('');
@@ -782,7 +804,13 @@ function getFields(ch,c={}){
     <div class="fg"><label>발송 제품</label><textarea id="f-product" placeholder="발송 제품명 및 수량...">${c.product||''}</textarea></div>
     <hr class="div">
     ${sf}
-    <div class="fg"><label>📁 파일/폴더 URL</label><input type="url" id="f-folderUrl" value="${c.folderUrl||''}" placeholder="https://drive.google.com/..."></div>
+    <div class="fg">
+      <label style="display:flex;align-items:center;justify-content:space-between">
+        <span>🔗 링크</span>
+        <button type="button" onclick="addUrlRow()" class="btn" style="font-size:11px;padding:3px 10px">+ 추가</button>
+      </label>
+      <div id="url-rows"></div>
+    </div>
     ${isR?`<div class="fg"><label>📄 Report URL</label><input type="url" id="f-reportUrl" value="${c.reportUrl||''}" placeholder="https://..."></div>`:''}
     <div class="fg"><label>메모</label><input type="text" id="f-memo" value="${c.memo||''}" placeholder="기타 메모..."></div>`;
 }
@@ -793,11 +821,14 @@ function openModal(ch,idx=null){
   document.getElementById('modal-ttl').textContent = idx!==null?'캠페인 수정':CH_INFO[ch].name+' — 캠페인 추가';
   document.getElementById('modal-body').innerHTML = getFields(ch,c);
   document.getElementById('overlay').classList.add('open');
-  // 날짜 피커 초기화 - DOM 렌더 후
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       initDatePicker('f-start', c.start||'', v=>{ dpState['f-start'].value=v; });
       initDatePicker('f-end', c.end||'', v=>{ dpState['f-end'].value=v; });
+      // URL rows 초기화
+      const urls = c.urls && c.urls.length ? c.urls : (c.folderUrl ? [{label:'폴더',url:c.folderUrl}] : [{label:'',url:''}]);
+      const container = document.getElementById('url-rows');
+      if(container){ container.innerHTML=''; urls.forEach((u,i)=>addUrlRow(u.label,u.url)); }
     });
   });
 }
@@ -821,7 +852,7 @@ async function saveCampaign(){
     purpose:g('f-purpose'), product:g('f-product'),
     applicants:gn('f-applicants'), completed:gn('f-completed'),
     submitted:gn('f-submitted'), dropped:gn('f-dropped'), paid:gn('f-paid'),
-    reportUrl:g('f-reportUrl'), folderUrl:g('f-folderUrl'), memo:g('f-memo')
+    reportUrl:g('f-reportUrl'), urls:getUrlRows(), memo:g('f-memo')
   };
   if(!c.name){alert('캠페인명을 입력해주세요.');return;}
   if(editIdx!==null) data[ch][editIdx]=c;
