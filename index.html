@@ -563,12 +563,15 @@ function renderDash(){
         <div class="stat-box"><div class="csl">이번달 캠페인</div><div class="csv" style="color:${info.col}">${camps.length}</div></div>
         <div class="stat-box"><div class="csl">수급 콘텐츠</div><div class="csv" style="color:var(--green)">${content}</div></div>
       </div>
-      ${urlBtns.length?`<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:6px">${
-        urlBtns.map(u=>`<a href="${u.url}" target="_blank" class="url-box" onclick="event.stopPropagation()" style="text-decoration:none">
-          <span style="font-size:16px">${u.label==='Report'?'📄':'📁'}</span>
-          <span class="url-lbl">${u.label==='Report'?'Report 열기':'콘텐츠 폴더 열기'}</span>
-          <span style="font-size:14px;color:#30d158">→</span>
-        </a>`).join('')
+      ${urlBtns.length?`<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:4px">${
+        urlBtns.map(u=>{
+          const icon=u.label==='Report'?'📄':u.label.includes('시트')||u.label.toLowerCase().includes('sheet')?'📊':'📁';
+          return `<a href="${u.url}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;display:flex;align-items:center;gap:8px;padding:7px 12px;background:rgba(48,209,88,0.08);border:0.5px solid rgba(48,209,88,0.2);border-radius:8px;transition:all 0.15s" onmouseover="this.style.background='rgba(48,209,88,0.16)'" onmouseout="this.style.background='rgba(48,209,88,0.08)'">
+            <span style="font-size:13px">${icon}</span>
+            <span style="font-size:12px;color:#30d158;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.label||'링크'} 열기</span>
+            <span style="font-size:12px;color:#30d158">→</span>
+          </a>`;
+        }).join('')
       }</div>`:''}
     </div>`;
   }).join('');
@@ -742,7 +745,7 @@ function renderList(ch){
           if(!allUrls.length&&c.folderUrl) allUrls.push({label:'폴더',url:c.folderUrl});
           return allUrls.map(u=>`<a href="${u.url}" target="_blank" class="url-box" onclick="event.stopPropagation()" style="margin-bottom:6px">
             <span style="font-size:18px">${u.label==='Report'?'📄':u.label.includes('시트')||u.label.includes('sheet')?'📊':'📁'}</span>
-            <span class="url-lbl">${u.label||'링크'} 열기</span>
+            <span class="url-lbl">${u.label||'링크'}</span>
             <span style="font-size:16px;color:#30d158">→</span>
           </a>`).join('');
         })()}
