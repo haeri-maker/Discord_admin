@@ -92,8 +92,9 @@ a{text-decoration:none;}
 .stat-box{text-align:center;}
 .sl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;}
 .sv{font-size:19px;font-weight:600;font-family:var(--mono);}
-.url-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg);border-radius:8px;margin-top:8px;border:0.5px solid var(--border);}
-.url-lbl{font-size:10px;color:var(--text3);flex-shrink:0;font-weight:600;text-transform:uppercase;}
+.url-box{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,rgba(48,209,88,0.12),rgba(48,209,88,0.06));border-radius:12px;margin-top:10px;border:1px solid rgba(48,209,88,0.25);cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.url-box:hover{background:linear-gradient(135deg,rgba(48,209,88,0.22),rgba(48,209,88,0.12));border-color:rgba(48,209,88,0.5);transform:translateY(-1px);}
+.url-lbl{font-size:13px;color:#30d158;font-weight:700;letter-spacing:0.3px;}
 .url-txt{font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);}
 
 /* MONTH SECTION */
@@ -551,8 +552,8 @@ function renderDash(){
     const content = contentCamps.reduce((s,c)=>s+(ch==='discord'?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
     const urlBtns = [];
     camps.forEach(c=>{
+      if(c.folderUrl) urlBtns.push({label:'폴더',url:c.folderUrl,name:c.name});
       if((ch==='nurilounge'||ch==='roster')&&c.reportUrl) urlBtns.push({label:'Report',url:c.reportUrl,name:c.name});
-      if(ch==='ugc'&&c.folderUrl) urlBtns.push({label:'폴더',url:c.folderUrl,name:c.name});
     });
     return `<div class="ch-card" onclick="showPage('${ch}')">
       <div class="ch-icon" style="background:${info.bg};color:${info.col}">${info.icon}</div>
@@ -561,8 +562,12 @@ function renderDash(){
         <div class="stat-box"><div class="csl">이번달 캠페인</div><div class="csv" style="color:${info.col}">${camps.length}</div></div>
         <div class="stat-box"><div class="csl">수급 콘텐츠</div><div class="csv" style="color:var(--green)">${content}</div></div>
       </div>
-      ${urlBtns.length?`<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:5px">${
-        urlBtns.map(u=>`<div class="url-box"><span class="url-lbl">${u.label}</span><span class="url-txt">${u.name}</span><a href="${u.url}" target="_blank" class="btn green" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="event.stopPropagation()">열기 →</a></div>`).join('')
+      ${urlBtns.length?`<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:6px">${
+        urlBtns.map(u=>`<a href="${u.url}" target="_blank" class="url-box" onclick="event.stopPropagation()" style="text-decoration:none">
+          <span style="font-size:16px">${u.label==='Report'?'📄':'📁'}</span>
+          <span class="url-lbl">${u.label==='Report'?'Report 열기':'콘텐츠 폴더 열기'}</span>
+          <span style="font-size:14px;color:#30d158">→</span>
+        </a>`).join('')
       }</div>`:''}
     </div>`;
   }).join('');
@@ -709,8 +714,16 @@ function renderList(ch){
         ${c.purpose?`<div class="ci-desc"><div class="ci-desc-lbl">오픈 목적</div>${c.purpose}</div>`:''}
         ${c.product?`<div class="ci-desc"><div class="ci-desc-lbl">발송 제품</div>${c.product}</div>`:''}
         ${stats}
-        ${isR&&c.reportUrl?`<div class="url-box"><span class="url-lbl">Report</span><span class="url-txt">${c.reportUrl}</span><a href="${c.reportUrl}" target="_blank" class="btn green" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="event.stopPropagation()">열기 →</a></div>`:''}
-        ${isU&&c.folderUrl?`<div class="url-box"><span class="url-lbl">폴더</span><span class="url-txt">${c.folderUrl}</span><a href="${c.folderUrl}" target="_blank" class="btn green" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="event.stopPropagation()">열기 →</a></div>`:''}
+        ${c.folderUrl?`<a href="${c.folderUrl}" target="_blank" class="url-box" onclick="event.stopPropagation()">
+          <span style="font-size:18px">📁</span>
+          <span class="url-lbl">콘텐츠 폴더 열기</span>
+          <span style="font-size:16px;color:#30d158">→</span>
+        </a>`:''}
+        ${isR&&c.reportUrl?`<a href="${c.reportUrl}" target="_blank" class="url-box" onclick="event.stopPropagation()">
+          <span style="font-size:18px">📄</span>
+          <span class="url-lbl">Report 열기</span>
+          <span style="font-size:16px;color:#30d158">→</span>
+        </a>`:''}
         ${c.memo?`<div style="font-size:12px;color:var(--text2);margin-top:8px">💬 ${c.memo}</div>`:''}
       </div>`;
     }).join('');
@@ -769,8 +782,8 @@ function getFields(ch,c={}){
     <div class="fg"><label>발송 제품</label><textarea id="f-product" placeholder="발송 제품명 및 수량...">${c.product||''}</textarea></div>
     <hr class="div">
     ${sf}
+    <div class="fg"><label>📁 파일/폴더 URL</label><input type="url" id="f-folderUrl" value="${c.folderUrl||''}" placeholder="https://drive.google.com/..."></div>
     ${isR?`<div class="fg"><label>📄 Report URL</label><input type="url" id="f-reportUrl" value="${c.reportUrl||''}" placeholder="https://..."></div>`:''}
-    ${isU?`<div class="fg"><label>📁 폴더 URL</label><input type="url" id="f-folderUrl" value="${c.folderUrl||''}" placeholder="https://drive.google.com/..."></div>`:''}
     <div class="fg"><label>메모</label><input type="text" id="f-memo" value="${c.memo||''}" placeholder="기타 메모..."></div>`;
 }
 
