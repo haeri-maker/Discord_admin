@@ -484,8 +484,10 @@ function showToast(msg, warn=false) {
 // --- UTILS ---
 function curMonth(){ const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'); }
 function campMonth(c){
-  if(!c.start) return null;
-  const d = new Date(c.start.length===7?c.start+'-01':c.start);
+  // 종료일 기준 (수급은 마지막에 완료되므로)
+  const ref = c.end || c.start;
+  if(!ref) return null;
+  const d = new Date(ref.length===7?ref+'-28':ref);
   if(isNaN(d)) return null;
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 }
