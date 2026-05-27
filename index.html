@@ -772,15 +772,28 @@ function closeModal(){
 
 async function saveCampaign(){
   const ch=editCh;
-  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  // 일반 input
+  const g=id=>{
+    if(id==='f-start'||id==='f-end') return dpState[id]?.value||'';
+    const el=document.getElementById(id); return el?el.value.trim():'';
+  };
   const gn=id=>{const el=document.getElementById(id);return el?(parseInt(el.value)||0):0;};
-  const c={name:g('f-name'),branch:g('f-branch'),start:g('f-start'),end:g('f-end'),purpose:g('f-purpose'),product:g('f-product'),applicants:gn('f-applicants'),completed:gn('f-completed'),submitted:gn('f-submitted'),dropped:gn('f-dropped'),paid:gn('f-paid'),reportUrl:g('f-reportUrl'),folderUrl:g('f-folderUrl'),memo:g('f-memo')};
+  const c={
+    name:g('f-name'), branch:g('f-branch'),
+    start:g('f-start'), end:g('f-end'),
+    purpose:g('f-purpose'), product:g('f-product'),
+    applicants:gn('f-applicants'), completed:gn('f-completed'),
+    submitted:gn('f-submitted'), dropped:gn('f-dropped'), paid:gn('f-paid'),
+    reportUrl:g('f-reportUrl'), folderUrl:g('f-folderUrl'), memo:g('f-memo')
+  };
   if(!c.name){alert('캠페인명을 입력해주세요.');return;}
   if(editIdx!==null) data[ch][editIdx]=c;
   else data[ch].push(c);
-  saveData();
   closeModal();
   renderList(ch);
+  renderDash();
+  renderOvCal();
+  await saveData();
 }
 
 function delCamp(ch,idx){
