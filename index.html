@@ -65,7 +65,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .nav-badge { margin-left:auto; font-size:10px; padding:1px 7px; border-radius:99px; background:var(--bg4); color:var(--text3); font-family:var(--font-mono); }
 
 /* MAIN */
-.main { margin-left:220px; flex:1; padding:28px 32px; min-height:100vh; }
+.main { margin-left:220px; flex:1; padding:20px 28px; min-height:100vh; }
 .page { display:none; }
 .page.active { display:block; }
 .page-header { margin-bottom:24px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
@@ -151,7 +151,7 @@ hr.divider { border:none; border-top:0.5px solid var(--border); margin:16px 0; }
 .cal-title { font-size:16px; font-weight:600; }
 .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--border); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; }
 .cal-dow { background:var(--bg2); padding:8px 0; text-align:center; font-size:11px; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-.cal-day { background:var(--surface); min-height:90px; padding:8px; position:relative; transition:background 0.15s; }
+.cal-day { background:var(--surface); min-height:72px; padding:6px; position:relative; transition:background 0.15s; }
 .cal-day:hover { background:var(--bg3); }
 .cal-day.other-month .cal-day-num { color:var(--text3); }
 .cal-day.today .cal-day-num { background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
@@ -213,6 +213,9 @@ hr.divider { border:none; border-top:0.5px solid var(--border); margin:16px 0; }
     UGC
     <span class="nav-badge" id="nb-ugc">0</span>
   </div>
+    Archive
+    <span class="nav-badge" id="nb-archive">0</span>
+  </div>
 </nav>
 
 <main class="main">
@@ -246,7 +249,7 @@ hr.divider { border:none; border-top:0.5px solid var(--border); margin:16px 0; }
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#bf5af2"></div>Nurilounge Roster</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:#ff9f0a"></div>UGC</div>
     </div>
-    <div class="cal-grid" id="ov-cal-grid">
+    <div class="cal-grid" id="ov-cal-grid" style="font-size:11px">
       <div class="cal-dow">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div>
       <div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow">토</div>
     </div>
@@ -302,6 +305,8 @@ hr.divider { border:none; border-top:0.5px solid var(--border); margin:16px 0; }
   <div id="ugc-list"></div>
 </div>
 
+
+
 </main>
 </div>
 
@@ -328,10 +333,68 @@ const CHANNELS = {
   ugc:{name:'UGC',icon:'ugc',color:'#ff9f0a'}
 };
 
-let data = JSON.parse(localStorage.getItem('ca_v2')||'{"discord":[],"nurilounge":[],"roster":[],"ugc":[]}');
-['discord','nurilounge','roster','ugc'].forEach(ch=>{ if(!data[ch]) data[ch]=[]; });
+const SUPA_URL = 'https://lndtrhoqkjmoorhcvxyq.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxuZHRyaG9xa2ptb29yaGN2eHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MjI2MjQsImV4cCI6MjA5MDk5ODYyNH0.-axQ5geQFEtLxRC33avGFC4K5oioovqb_qMhkVCA_jw';
 
-function save(){ localStorage.setItem('ca_v2',JSON.stringify(data)); }
+let data = {'discord':[],'nurilounge':[],'roster':[],'ugc':[]};
+
+function showLoading(show) {
+  let el = document.getElementById('loading-bar');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'loading-bar';
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#30d158);z-index:9999;transition:opacity 0.4s';
+    document.body.appendChild(el);
+  }
+  el.style.opacity = show ? '1' : '0';
+}
+
+async function loadData() {
+  try {
+    showLoading(true);
+    const res = await fetch(SUPA_URL+'/rest/v1/campaigns?select=*', {
+      headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer '+SUPA_KEY}
+    });
+    const rows = await res.json();
+    data = {'discord':[],'nurilounge':[],'roster':[],'ugc':[]};
+    if(Array.isArray(rows)) rows.forEach(row => {
+      if(data[row.channel] !== undefined) data[row.channel] = row.data || [];
+    });
+  } catch(e) {
+    console.error('Load error:', e);
+    const local = JSON.parse(localStorage.getItem('ca_v2')||'null');
+    if(local) data = local;
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function save() {
+  localStorage.setItem('ca_v2', JSON.stringify(data));
+  try {
+    for(const ch of ['discord','nurilounge','roster','ugc']) {
+      const res = await fetch(SUPA_URL+'/rest/v1/campaigns?channel=eq.'+ch+'&select=id', {
+        headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer '+SUPA_KEY}
+      });
+      const existing = await res.json();
+      if(existing.length > 0) {
+        await fetch(SUPA_URL+'/rest/v1/campaigns?channel=eq.'+ch, {
+          method: 'PATCH',
+          headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer '+SUPA_KEY, 'Content-Type': 'application/json'},
+          body: JSON.stringify({data: data[ch], updated_at: new Date().toISOString()})
+        });
+      } else {
+        await fetch(SUPA_URL+'/rest/v1/campaigns', {
+          method: 'POST',
+          headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer '+SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
+          body: JSON.stringify({channel: ch, data: data[ch]})
+        });
+      }
+    }
+  } catch(e) {
+    console.error('Save error:', e);
+  }
+}
 
 let currentBranch='all', editCh=null, editIdx=null;
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
@@ -347,6 +410,7 @@ function showPage(name){
   if(name==='overview') { renderOverview(); renderOvCal(); }
   
   if(name==='discord'||name==='nurilounge'||name==='roster'||name==='ugc') renderList(name);
+
 }
 
 // BRANCH
@@ -370,113 +434,58 @@ function renderOverview(){
   const chs=['discord','nurilounge','roster','ugc'];
   const chColors={'discord':'rgba(10,132,255,0.15)','nurilounge':'rgba(48,209,88,0.15)','roster':'rgba(191,90,242,0.15)','ugc':'rgba(255,159,10,0.15)'};
   const chTxtColors={'discord':'#4cb8ff','nurilounge':'#30d158','roster':'#bf5af2','ugc':'#ff9f0a'};
+  const curMonth=getCurrentMonth();
 
   g.innerHTML = chs.map(ch=>{
-    const camps=data[ch].filter(c=>currentBranch==='all'||c.branch===currentBranch);
-    const isDisc=ch==='discord';
-    const totalA=camps.reduce((s,c)=>s+(parseInt(c.applicants)||0),0);
-    const totalC=camps.reduce((s,c)=>s+(isDisc?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
-    const totalD=camps.reduce((s,c)=>s+(parseInt(c.dropped)||0),0);
-    const rate=totalA>0?Math.round(totalC/totalA*100):0;
-    const branches=[...new Set(camps.map(c=>c.branch).filter(Boolean))];
+    const ch_info = CHANNELS[ch];
+    // 이번 달 캠페인만 대시보드에
+    const camps=(data[ch]||[]).filter(c=>getCampaignMonth(c)===curMonth && (currentBranch==='all'||c.branch===currentBranch));
     const col=chTxtColors[ch];
+    const totalCampaigns=camps.length;
+    const totalContent=camps.reduce((s,c)=>s+(ch==='discord'?(parseInt(c.submitted)||0):(parseInt(c.completed)||0)),0);
+    const branches=[...new Set(camps.map(c=>c.branch).filter(Boolean))];
+
+    // URL 버튼 (report/folder)
+    const urlBtns=[];
+    camps.forEach(c=>{
+      if((ch==='nurilounge'||ch==='roster')&&c.reportUrl) urlBtns.push({label:'Report',url:c.reportUrl,name:c.name});
+      if(ch==='ugc'&&c.folderUrl) urlBtns.push({label:'폴더',url:c.folderUrl,name:c.name});
+    });
 
     return `<div class="channel-card" onclick="showPage('${ch}')">
       <div class="ch-icon" style="background:${chColors[ch]};color:${col};font-size:20px">
-        ${ch==='discord'?'◈':ch==='nurilounge'?'⬡':ch==='roster'?'⬟':'▶'}
+        ${ch==='discord'?'🎮':ch==='nurilounge'?'🍵':ch==='roster'?'📋':'🎬'}
       </div>
-      <div class="ch-name">${CHANNELS[ch].name}</div>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
-        ${branches.map(b=>branchBadge(b)).join('')}
-        <span class="badge badge-gray" style="font-size:10px">${camps.length}개 운영 중</span>
+      <div class="ch-name">${ch_info.name}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+        ${branches.map(b=>`<span class="badge ${b==='Global'?'badge-blue':b==='US'?'badge-green':'badge-orange'}" style="font-size:10px">${b}</span>`).join('')}
       </div>
-      <div class="ch-stats">
+      <div class="ch-stats" style="grid-template-columns:1fr 1fr">
         <div class="stat-box">
-          <div class="ch-stat-label">신청자</div>
-          <div class="ch-stat-value" style="color:${col}">${totalA.toLocaleString()}</div>
+          <div class="ch-stat-label">이번 달 캠페인</div>
+          <div class="ch-stat-value" style="color:${col}">${totalCampaigns}</div>
         </div>
         <div class="stat-box">
-          <div class="ch-stat-label">${isDisc?'제출':'완료'}</div>
-          <div class="ch-stat-value" style="color:#30d158">${totalC.toLocaleString()}</div>
-        </div>
-        <div class="stat-box">
-          <div class="ch-stat-label">${isDisc?'제출률':'완료율'}</div>
-          <div class="ch-stat-value" style="color:#ff9f0a">${rate}%</div>
+          <div class="ch-stat-label">수급 콘텐츠</div>
+          <div class="ch-stat-value" style="color:#30d158">${totalContent.toLocaleString()}</div>
         </div>
       </div>
-      ${(()=>{
-        const urls=[];
-        camps.forEach(c=>{
-          if((ch==='nurilounge'||ch==='roster')&&c.reportUrl)
-            urls.push({label:'Report',url:c.reportUrl,name:c.name});
-          if(ch==='ugc'&&c.folderUrl)
-            urls.push({label:'폴더',url:c.folderUrl,name:c.name});
-        });
-        if(!urls.length) return '';
-        return '<div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:6px">'
-          +urls.map(u=>'<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:8px;border:0.5px solid var(--border)">'
-            +'<span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;flex-shrink:0">'+u.label+'</span>'
-            +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+u.name+'</span>'
-            +'<a href="'+u.url+'" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:5px 10px" onclick="event.stopPropagation()">열기 →</a>'
-            +'</div>').join('')
-          +'</div>';
-      })()}
+      ${urlBtns.length?'<div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:6px">'
+        +urlBtns.map(u=>'<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:8px;border:0.5px solid var(--border)">'
+          +'<span style="font-size:10px;color:var(--text3);font-weight:600;flex-shrink:0">'+u.label+'</span>'
+          +'<span style="font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+u.name+'</span>'
+          +'<a href="'+u.url+'" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:5px 10px" onclick="event.stopPropagation()">열기 →</a>'
+          +'</div>').join('')+'</div>':''}
     </div>`;
   }).join('');
 }
 
-function ovCalPrev(){ ovCalMonth--; if(ovCalMonth<0){ovCalMonth=11;ovCalYear--;} renderOvCal(); }
-function ovCalNext(){ ovCalMonth++; if(ovCalMonth>11){ovCalMonth=0;ovCalYear++;} renderOvCal(); }
-
-let ovCalYear=new Date().getFullYear(), ovCalMonth=new Date().getMonth();
-
-function renderOvCal(){
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const titleEl=document.getElementById('ov-cal-title');
-  if(titleEl) titleEl.textContent=months[ovCalMonth]+' '+ovCalYear;
-
-  const firstDay=new Date(ovCalYear,ovCalMonth,1).getDay();
-  const lastDate=new Date(ovCalYear,ovCalMonth+1,0).getDate();
-  const today=new Date();
-
-  const events=[];
-  ['discord','nurilounge','roster','ugc'].forEach(ch=>{
-    data[ch].forEach(c=>{
-      const p=parsePeriod(c.period);
-      if(p) events.push({name:c.name,start:p.start,end:p.end,ch});
-    });
-  });
-
-  const prevDays=new Date(ovCalYear,ovCalMonth,0).getDate();
-  let cells='';
-  for(let i=0;i<firstDay;i++){
-    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${prevDays-firstDay+1+i}</div></div>`;
-  }
-  for(let d=1;d<=lastDate;d++){
-    const date=new Date(ovCalYear,ovCalMonth,d);
-    const isToday=today.getFullYear()===ovCalYear&&today.getMonth()===ovCalMonth&&today.getDate()===d;
-    const dayEvents=events.filter(e=>date>=e.start&&date<=e.end);
-    const evHTML=dayEvents.slice(0,2).map(e=>`<div class="cal-event ${e.ch}" title="${e.name}">${e.name}</div>`).join('');
-    const more=dayEvents.length>2?`<div style="font-size:9px;color:var(--text3);padding:1px 4px">+${dayEvents.length-2}</div>`:'';
-    cells+=`<div class="cal-day${isToday?' today':''}"><div class="cal-day-num">${d}</div>${evHTML}${more}</div>`;
-  }
-  const rem=(7-((firstDay+lastDate)%7))%7;
-  for(let d=1;d<=rem;d++){
-    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
-  }
-
-  const grid=document.getElementById('ov-cal-grid');
-  if(!grid) return;
-  const headers=Array.from(grid.children).slice(0,7);
-  grid.innerHTML='';
-  headers.forEach(h=>grid.appendChild(h));
-  grid.insertAdjacentHTML('beforeend',cells);
-}
 
 function updateBadges(){
+  const active = getActiveData();
   ['discord','nurilounge','roster','ugc'].forEach(ch=>{
     const el=document.getElementById('nb-'+ch);
-    if(el) el.textContent=data[ch].length;
+    if(el) el.textContent=(active[ch]||[]).length;
   });
 }
 
@@ -484,20 +493,52 @@ function updateBadges(){
 function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
 function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
 
-function parsePeriod(periodStr){
-  if(!periodStr) return null;
-  // "2026.01 ~ 2026.03" or "2026-01-14 ~ 2026-02-08"
-  const parts=periodStr.split(/[~\-–]/);
-  if(parts.length<2) return null;
+function parsePeriod(campaign){
+  if(!campaign) return null;
+  const s = campaign.start, e = campaign.end;
+  if(!s||!e) return null;
   try{
-    const s=parts[0].trim().replace(/\./g,'-');
-    const e=parts[parts.length-1].trim().replace(/\./g,'-');
     const sd=new Date(s.length===7?s+'-01':s);
     const ed=new Date(e.length===7?e+'-28':e);
     if(isNaN(sd)||isNaN(ed)) return null;
     return {start:sd,end:ed};
-  }catch(e){return null;}
+  }catch(ex){return null;}
 }
+
+function getCampaignMonth(campaign) {
+  // start 기준으로 YYYY-MM 반환
+  if(!campaign.start) return null;
+  const s = campaign.start.replace(/\./g,'-');
+  const d = new Date(s.length===7?s+'-01':s);
+  if(isNaN(d)) return null;
+  return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'));
+}
+
+function getCurrentMonth() {
+  const now = new Date();
+  return now.getFullYear()+'-'+(String(now.getMonth()+1).padStart(2,'0'));
+}
+
+function getActiveData() {
+  const cur = getCurrentMonth();
+  const result = {};
+  ['discord','nurilounge','roster','ugc'].forEach(ch => {
+    result[ch] = (data[ch]||[]).filter(c => getCampaignMonth(c)===cur);
+  });
+  return result;
+}
+
+function getCampaignsByMonth(ch) {
+  // 채널의 캠페인을 월별로 그룹화 {YYYY-MM: [campaigns]}
+  const groups = {};
+  (data[ch]||[]).forEach(c => {
+    const m = getCampaignMonth(c) || '날짜 없음';
+    if(!groups[m]) groups[m] = [];
+    groups[m].push(c);
+  });
+  return groups;
+}
+
 
 function renderCalendar(){
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -511,7 +552,7 @@ function renderCalendar(){
   const events=[];
   ['discord','nurilounge','roster','ugc'].forEach(ch=>{
     data[ch].forEach(c=>{
-      const p=parsePeriod(c.period);
+      const p=parsePeriod(c);
       if(p) events.push({name:c.name,start:p.start,end:p.end,ch});
     });
   });
@@ -550,12 +591,203 @@ function renderCalendar(){
 // LIST
 function renderList(ch){
   const container=document.getElementById(ch+'-list');
-  const camps=data[ch];
+  const allCamps=data[ch]||[];
+  if(!allCamps.length){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">캠페인 없음</div><div style="font-size:12px">위 버튼으로 추가해보세요</div></div>`;
+    return;
+  }
+
+  
+  const curMonth=getCurrentMonth();
+
+  // 월별 그룹화
+  const groups={};
+  allCamps.forEach((c,i)=>{
+    const m=getCampaignMonth(c)||'날짜 없음';
+    if(!groups[m]) groups[m]=[];
+    groups[m].push({...c, _idx:i});
+  });
+
+  // 월 내림차순 정렬 (최신이 위)
+  const sortedMonths=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+
+  const monthLabel=m=>{
+    if(m==='날짜 없음') return '날짜 없음';
+    const [y,mo]=m.split('-');
+    const names=['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    return y+'년 '+names[parseInt(mo)];
+  };
+
+  container.innerHTML=sortedMonths.map(month=>{
+    const camps=groups[month];
+    const isCurrent=month===curMonth;
+
+    const campsHTML=camps.map(c=>{
+      const i=c._idx;
+      const a=parseInt(c.applicants)||0,cm=parseInt(c.completed)||0,sub=parseInt(c.submitted)||0,dr=parseInt(c.dropped)||0,pd=parseInt(c.paid)||0;
+      const rate=isD?(a>0?Math.round(sub/a*100):0):(a>0?Math.round(cm/a*100):0);
+      const stats=isD?
+        `<div class="stats-row">
+          <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">제출자</div><div class="stat-value" style="color:#30d158">${sub.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">미제출</div><div class="stat-value" style="color:#ff453a">${Math.max(0,a-sub).toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">제출률</div><div class="stat-value" style="color:#ff9f0a">${rate}%</div></div>
+        </div>`:isU?
+        `<div class="stats-row">
+          <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">수급 완료</div><div class="stat-value" style="color:#30d158">${cm.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">Paid</div><div class="stat-value" style="color:#ff9f0a">${pd.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">드롭</div><div class="stat-value" style="color:#ff453a">${dr.toLocaleString()}</div></div>
+        </div>`:
+        `<div class="stats-row">
+          <div class="stat-box"><div class="stat-label">신청자</div><div class="stat-value" style="color:#4cb8ff">${a.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">완료</div><div class="stat-value" style="color:#30d158">${cm.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">드롭</div><div class="stat-value" style="color:#ff453a">${dr.toLocaleString()}</div></div>
+          <div class="stat-box"><div class="stat-label">완료율</div><div class="stat-value" style="color:#ff9f0a">${rate}%</div></div>
+        </div>`;
+      return `<div class="campaign-item" style="${isCurrent?'':'opacity:0.65'}">
+        <div class="ci-header">
+          <div style="flex:1;min-width:0">
+            <div class="ci-title">${c.name||'(이름 없음)'}</div>
+            <div class="ci-meta">
+              ${c.branch?`<span class="badge ${c.branch==='Global'?'badge-blue':c.branch==='US'?'badge-green':'badge-orange'}" style="font-size:10px">${c.branch}</span>`:''}
+              ${c.start&&c.end?`<span class="badge badge-gray" style="font-size:10px">📅 ${c.start} ~ ${c.end}</span>`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button onclick="openModal('${ch}',${i})" class="btn" style="font-size:11px;padding:5px 12px">수정</button>
+            <button onclick="delCampaign('${ch}',${i})" class="btn danger" style="font-size:11px;padding:5px 12px">삭제</button>
+          </div>
+        </div>
+        ${c.purpose?`<div class="ci-desc"><div class="ci-desc-label">오픈 목적</div>${c.purpose}</div>`:''}
+        ${c.product?`<div class="ci-desc"><div class="ci-desc-label">발송 제품</div>${c.product}</div>`:''}
+        ${stats}
+        ${hasR&&c.reportUrl?`<div class="url-box"><span class="url-label">Report</span><span class="url-text">${c.reportUrl}</span><a href="${c.reportUrl}" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:6px 14px" onclick="event.stopPropagation()">열기 →</a></div>`:''}
+        ${isU&&c.folderUrl?`<div class="url-box"><span class="url-label">폴더</span><span class="url-text">${c.folderUrl}</span><a href="${c.folderUrl}" target="_blank" class="btn green" style="flex-shrink:0;font-size:11px;padding:6px 14px" onclick="event.stopPropagation()">열기 →</a></div>`:''}
+        ${c.memo?`<div style="font-size:12px;color:var(--text3);margin-top:10px;font-style:italic">💬 ${c.memo}</div>`:''}
+      </div>`;
+    }).join('');
+
+    return `<div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;color:${isCurrent?'var(--text)':'var(--text3)'}">${monthLabel(month)}</div>
+        ${isCurrent?`<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(10,132,255,0.15);color:#4cb8ff;font-weight:600">이번 달</span>`:`<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--text3)">아카이브</span>`}
+        <span style="font-size:10px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--text3)">${camps.length}개</span>
+      </div>
+      ${campsHTML}
+    </div>`;
+  }).join('');
+}
+
+
+// CALENDAR
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function parsePeriod(campaign){
+  if(!campaign) return null;
+  const s = campaign.start, e = campaign.end;
+  if(!s||!e) return null;
+  try{
+    const sd=new Date(s.length===7?s+'-01':s);
+    const ed=new Date(e.length===7?e+'-28':e);
+    if(isNaN(sd)||isNaN(ed)) return null;
+    return {start:sd,end:ed};
+  }catch(ex){return null;}
+}
+
+function getCampaignMonth(campaign) {
+  // start 기준으로 YYYY-MM 반환
+  if(!campaign.start) return null;
+  const s = campaign.start.replace(/\./g,'-');
+  const d = new Date(s.length===7?s+'-01':s);
+  if(isNaN(d)) return null;
+  return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'));
+}
+
+function getCurrentMonth() {
+  const now = new Date();
+  return now.getFullYear()+'-'+(String(now.getMonth()+1).padStart(2,'0'));
+}
+
+function getActiveData() {
+  const cur = getCurrentMonth();
+  const result = {};
+  ['discord','nurilounge','roster','ugc'].forEach(ch => {
+    result[ch] = (data[ch]||[]).filter(c => getCampaignMonth(c)===cur);
+  });
+  return result;
+}
+
+function getCampaignsByMonth(ch) {
+  // 채널의 캠페인을 월별로 그룹화 {YYYY-MM: [campaigns]}
+  const groups = {};
+  (data[ch]||[]).forEach(c => {
+    const m = getCampaignMonth(c) || '날짜 없음';
+    if(!groups[m]) groups[m] = [];
+    groups[m].push(c);
+  });
+  return groups;
+}
+
+
+function renderCalendar(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent=months[calMonth]+' '+calYear;
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const lastDate=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+
+  // collect events
+  const events=[];
+  ['discord','nurilounge','roster','ugc'].forEach(ch=>{
+    data[ch].forEach(c=>{
+      const p=parsePeriod(c);
+      if(p) events.push({name:c.name,start:p.start,end:p.end,ch});
+    });
+  });
+
+  let cells='';
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  for(let i=0;i<firstDay;i++){
+    const d=prevDays-firstDay+1+i;
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+  for(let d=1;d<=lastDate;d++){
+    const date=new Date(calYear,calMonth,d);
+    const isToday=today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const dayEvents=events.filter(e=>date>=e.start&&date<=e.end);
+    const evHTML=dayEvents.slice(0,3).map(e=>`<div class="cal-event ${e.ch}" title="${e.name}">${e.name}</div>`).join('');
+    const more=dayEvents.length>3?`<div style="font-size:9px;color:var(--text3);padding:1px 4px">+${dayEvents.length-3}개</div>`:'';
+    cells+=`<div class="cal-day${isToday?' today':''}">
+      <div class="cal-day-num">${d}</div>
+      ${evHTML}${more}
+    </div>`;
+  }
+  const remaining=(7-((firstDay+lastDate)%7))%7;
+  for(let d=1;d<=remaining;d++){
+    cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  // cal-cells is inside the grid, but we need to update all cells
+  const calGrid=document.querySelector('.cal-grid');
+  // remove old day cells (keep DOW headers = first 7)
+  const headers=Array.from(calGrid.children).slice(0,7);
+  calGrid.innerHTML='';
+  headers.forEach(h=>calGrid.appendChild(h));
+  calGrid.insertAdjacentHTML('beforeend',cells);
+}
+
+// LIST
+function renderList(ch){
+  const container=document.getElementById(ch+'-list');
+  const camps=(getActiveData()[ch]||[]);
   if(!camps.length){
     container.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">캠페인 없음</div><div style="font-size:12px">위 버튼으로 추가해보세요</div></div>`;
     return;
   }
-  const isD=ch==='discord',isU=ch==='ugc',hasR=ch==='nurilounge'||ch==='roster';
+  
   container.innerHTML=camps.map((c,i)=>{
     const a=parseInt(c.applicants)||0,cm=parseInt(c.completed)||0,sub=parseInt(c.submitted)||0,dr=parseInt(c.dropped)||0,pd=parseInt(c.paid)||0;
     const rate=isD?(a>0?Math.round(sub/a*100):0):(a>0?Math.round(cm/a*100):0);
@@ -606,7 +838,7 @@ function renderList(ch){
 
 // MODAL
 function getFields(ch,c={}){
-  const isD=ch==='discord',isU=ch==='ugc',hasR=ch==='nurilounge'||ch==='roster';
+  
   const statFields=isD?`
     <div class="form-row">
       <div class="form-group"><label>신청자 수</label><input type="number" id="f-applicants" value="${c.applicants||''}" placeholder="0" min="0"></div>
@@ -640,8 +872,7 @@ function getFields(ch,c={}){
         </select>
       </div>
     </div>
-    <div class="form-group"><label>기간 <span style="color:var(--text3);font-weight:400">(캘린더 표시용, 예: 2026.01 ~ 2026.03)</span></label>
-      <input type="text" id="f-period" value="${c.period||''}" placeholder="2026.01 ~ 2026.03"></div>
+    <div class="form-row"><div class="form-group"><label>시작일 <span style="color:var(--text3);font-weight:400">(예: 2026-01-14)</span></label><input type="text" id="f-start" value="${c.start||''}" placeholder="2026-01-14"></div><div class="form-group"><label>종료일</label><input type="text" id="f-end" value="${c.end||''}" placeholder="2026-03-31"></div></div>
     <div class="form-group"><label>오픈 목적</label><textarea id="f-purpose" placeholder="이번 캠페인의 목적...">${c.purpose||''}</textarea></div>
     <div class="form-group"><label>발송 제품</label><textarea id="f-product" placeholder="발송 제품명 및 수량...">${c.product||''}</textarea></div>
     <hr class="divider">
@@ -663,7 +894,7 @@ function saveCampaign(){
   const ch=editCh;
   const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
   const gn=id=>{const el=document.getElementById(id);return el?parseInt(el.value)||0:0;};
-  const c={name:g('f-name'),branch:g('f-branch'),period:g('f-period'),purpose:g('f-purpose'),product:g('f-product'),applicants:gn('f-applicants'),completed:gn('f-completed'),submitted:gn('f-submitted'),dropped:gn('f-dropped'),paid:gn('f-paid'),reportUrl:g('f-reportUrl'),folderUrl:g('f-folderUrl'),memo:g('f-memo')};
+  const c={name:g('f-name'),branch:g('f-branch'),start:g('f-start'),end:g('f-end'),purpose:g('f-purpose'),product:g('f-product'),applicants:gn('f-applicants'),completed:gn('f-completed'),submitted:gn('f-submitted'),dropped:gn('f-dropped'),paid:gn('f-paid'),reportUrl:g('f-reportUrl'),folderUrl:g('f-folderUrl'),memo:g('f-memo')};
   if(!c.name){alert('캠페인명을 입력해주세요.');return;}
   if(editIdx!==null) data[ch][editIdx]=c;
   else data[ch].push(c);
@@ -686,9 +917,11 @@ document.getElementById('modal-overlay').addEventListener('click',e=>{
 });
 
 // INIT
-renderOverview();
-updateBadges();
-renderCalendar();
+loadData().then(() => {
+  renderOverview();
+  renderOvCal();
+  updateBadges();
+});
 </script>
 </body>
 </html>
