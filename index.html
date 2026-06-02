@@ -202,7 +202,14 @@ hr.div{border:none;border-top:0.5px solid var(--border);margin:14px 0;}
 <!-- DASHBOARD -->
 <div class="page active" id="page-overview">
   <div class="ph">
-    <div><div class="pt">Dashboard</div><div class="ps">전체 캠페인 현황</div></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><div class="pt">Dashboard</div><div class="ps">전체 캠페인 현황</div></div>
+      <div style="display:flex;align-items:center;gap:6px;background:var(--bg2);padding:4px 8px;border-radius:10px;border:0.5px solid var(--border)">
+        <button class="btn" onclick="dashPrev()" style="padding:3px 9px;font-size:13px">‹</button>
+        <span id="dash-month-label" style="font-size:13px;font-weight:600;min-width:90px;text-align:center"></span>
+        <button class="btn" onclick="dashNext()" style="padding:3px 9px;font-size:13px">›</button>
+      </div>
+    </div>
     <div class="bf">
       <button class="bb active" onclick="setBranch('all',this)">All</button>
       <button class="bb" onclick="setBranch('Global',this)">Global</button>
@@ -427,6 +434,7 @@ const CH_INFO = {
 
 let data = {discord:[],nurilounge:[],roster:[],ugc:[],notes:{}};
 let branch = 'all', editCh = null, editIdx = null;
+let dashY = new Date().getFullYear(), dashM = new Date().getMonth();
 let ocY = new Date().getFullYear(), ocM = new Date().getMonth();
 
 // --- SUPABASE ---
@@ -556,9 +564,16 @@ function setBranch(b,btn){
   renderDash();
 }
 
+function dashPrev(){ dashM--; if(dashM<0){dashM=11;dashY--;} renderDash(); }
+function dashNext(){ dashM++; if(dashM>11){dashM=0;dashY++;} renderDash(); }
+
 // --- DASHBOARD ---
 function renderDash(){
-  const cm = curMonth();
+  const cm = dashY+'-'+String(dashM+1).padStart(2,'0');
+  const MNS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const isCurrentMonth = cm === curMonth();
+  const lbl = document.getElementById('dash-month-label');
+  if(lbl) lbl.innerHTML = dashY+'년 '+MNS[dashM]+(isCurrentMonth?' <span style="font-size:10px;color:var(--accent)">●</span>':'');
   const g = document.getElementById('ch-grid');
   g.innerHTML = CHS.map(ch=>{
     const info = CH_INFO[ch];
@@ -775,6 +790,13 @@ function renderList(ch){
   const months=Object.keys(grp).sort((a,b)=>b.localeCompare(a));
   container.innerHTML=months.map(m=>{
     const camps=grp[m], isCur=m===cm;
+    const today=new Date(); today.setHours(0,0,0,0);
+    function isActive(c){
+      const ref=c.end||c.start;
+      if(!ref) return true;
+      const e=new Date(ref.length===7?ref+'-28':ref);
+      return e>=today;
+    }
     const html=camps.map(c=>{
       const i=c._i;
       const a=parseInt(c.applicants)||0,cmp=parseInt(c.completed)||0,sub=parseInt(c.submitted)||0,dr=parseInt(c.dropped)||0,pd=parseInt(c.paid)||0;
@@ -797,7 +819,7 @@ function renderList(ch){
           <div class="stat-box"><div class="sl">드롭</div><div class="sv" style="color:#ff453a">${dr}</div></div>
           <div class="stat-box"><div class="sl">완료율</div><div class="sv" style="color:#ff9f0a">${a>0?Math.round(cmp/a*100):0}%</div></div>
         </div>`;
-      return `<div class="ci" style="${isCur?'':'opacity:0.6'}">
+      return `<div class="ci" style="${isActive(c)?'':'opacity:0.5'}">
         <div class="ci-hd">
           <div style="flex:1;min-width:0">
             <div class="ci-title">${c.name||'(이름 없음)'}</div>
@@ -830,7 +852,7 @@ function renderList(ch){
     return `<div style="margin-bottom:26px">
       <div class="month-hd">
         <span class="month-lbl" style="color:${isCur?'var(--text)':'var(--text3)'}">${monthLabel(m)}</span>
-        <span class="month-badge ${isCur?'cur-badge':'arc-badge'}">${isCur?'이번 달':'아카이브'}</span>
+        <span class="month-badge ${isCur?'cur-badge':'arc-badge'}">${isCur?'이번 달':'지난 달'}</span>
         <span class="month-badge arc-badge">${camps.length}개</span>
       </div>
       ${html}
